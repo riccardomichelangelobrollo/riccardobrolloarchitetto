@@ -1,67 +1,79 @@
 <!doctype html>
 <html lang="it">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="Riccardo Brollo Architetto — architettura, interni e spazi collettivi.">
-    <title>Riccardo Brollo Architetto</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Jost:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body class="home">
-    <header class="site-header home-header" id="inizio">
-      <a class="brand-mark" href="index.html" aria-label="Riccardo Brollo Architetto, home"><img src="assets/logo-chiocciola.jpg" alt=""></a>
-      <nav class="site-nav" aria-label="Navigazione principale">
-        <a href="#works">works<svg class="nav-arrow" viewBox="0 0 18 18" aria-hidden="true"><path d="M3.5 14.5 14.5 3.5M6 3.5h8.5V12"></path></svg></a>
-        <a href="#contact">contacts<svg class="nav-arrow" viewBox="0 0 18 18" aria-hidden="true"><path d="M3.5 14.5 14.5 3.5M6 3.5h8.5V12"></path></svg></a>
-      </nav>
-    </header>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Riccardo Brollo Architetto</title>
+  <meta name="description" content="Riccardo Brollo, architetto a Milano. Progetti di architettura e interni.">
+  <link rel="icon" href="img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body id="top">
+  <header class="intro">
+    <h1 class="monogram" aria-label="Riccardo Brollo Architetto"><span>R</span><span>B</span><span>A</span></h1>
+  </header>
 
-    <main class="home-main">
-      <div class="initials" aria-label="Riccardo Brollo Architetto"><span>R</span><span>B</span><span>A</span></div>
+  <main>
+    <section class="works" id="works">
+    <article class="project">
+      <a class="photo" href="casa-masolino.html"><img src="img/casa-masolino/04.jpg" width="1800" height="1200" alt="Casa Masolino" loading="eager"></a>
+      <div class="info">
+        <h2><a href="casa-masolino.html">Casa Masolino</a></h2>
+        <p>Una casa per un copywriter, all’ultimo piano.</p>
+        <p>70 mq organizzati attorno alla cucina, cuore pulsante della casa: pareti inclinate disegnano piccoli palchi di vita domestica, prospettive che si aprono una nell’altra.</p>
+        <p>La cucina, in rosso, è il focolare. Lo spazio di Michele, che ama invitare amici, cucinare, stare a tavola. Da qui nasce il passavivande: non solo per il cibo, ma per due parole in più con chi cucina.</p>
+        <p class="place">Milano, 2026</p>
+        <a class="more" href="casa-masolino.html">Vedi il progetto</a>
+      </div>
+    </article>
+    <article class="project flip">
+      <a class="photo" href="villetta-minima.html"><img src="img/villetta-minima/01.jpg" width="819" height="1024" alt="Villetta minima" loading="lazy"></a>
+      <div class="info">
+        <h2><a href="villetta-minima.html">Villetta minima</a></h2>
+        <p>Una piccola villetta di 95 mq di impronta a terra, rivolta verso il sole.</p>
+        <p class="place">Milano, 2026</p>
+        <a class="more" href="villetta-minima.html">Vedi il progetto</a>
+      </div>
+    </article>
+    <article class="project">
+      <a class="photo" href="opificio-culturale.html"><img src="img/opificio-culturale/01.jpg" width="1152" height="1536" alt="Opificio culturale" loading="lazy"></a>
+      <div class="info">
+        <h2><a href="opificio-culturale.html">Opificio culturale</a></h2>
+        <p>Spazio di aggregazione, bar, sala musica, spazio per una cena tra amici.</p>
+        <p>Un progetto per recuperare gli spazi della Cooperativa edificatrice di Cesate che dal 1910 rappresentano una comunità all’interno del territorio.</p>
+        <p class="place">Cesate, 2026</p>
+        <a class="more" href="opificio-culturale.html">Vedi il progetto</a>
+      </div>
+    </article>
+    <article class="project flip">
+      <a class="photo" href="casa-foglia.html"><img src="img/casa-foglia/04.jpg" width="1254" height="1254" alt="Casa Foglia" loading="lazy"></a>
+      <div class="info">
+        <h2><a href="casa-foglia.html">Casa Foglia</a></h2>
 
-      <section class="home-works" id="works" aria-label="Works">
-        <article class="home-project project-masolino">
-          <a class="home-project-image" href="casa-masolino.html" aria-label="Apri Casa Masolino"><img src="assets/casa-masolino-home.jpg" alt="Parete rossa e cucina di Casa Masolino" fetchpriority="high"></a>
-          <div class="home-project-copy">
-            <h1><a href="casa-masolino.html">Casa Masolino</a></h1>
-            <p class="project-deck">Una casa per un copywriter, all’ultimo piano.</p>
-            <p>70 mq organizzati attorno alla cucina, cuore pulsante della casa: pareti inclinate disegnano piccoli palchi di vita domestica, prospettive che si aprono una nell’altra.</p>
-            <p>La cucina, in rosso, è il focolare. Lo spazio di Michele, che ama invitare amici, cucinare, stare a tavola. Da qui nasce il passavivande: non solo per il cibo, ma per due parole in più con chi cucina.</p>
-            <p class="project-place">Milano, 2026</p>
-          </div>
-        </article>
+        <a class="more" href="casa-foglia.html">Vedi il progetto</a>
+      </div>
+    </article>
+    </section>
 
-        <article class="home-project project-villetta">
-          <div class="home-project-copy">
-            <h2><a href="villetta-minima.html">Villetta minima</a></h2>
-            <p class="project-deck">Una piccola villetta di 95 mq di impronta a terra, rivolta verso il sole</p>
-            <p class="project-place">Milano, 2026</p>
-          </div>
-          <a class="home-project-image" href="villetta-minima.html" aria-label="Apri Villetta minima"><img src="assets/villetta-minima-home.png" alt="Vista prospettica della Villetta minima" loading="lazy"></a>
-        </article>
+    <section class="contacts" id="contacts">
+      <h2>Contacts</h2>
+      <a class="email" href="mailto:studio@riccardobrolloarchitetto.it">studio@riccardobrolloarchitetto.it</a>
+      <dl class="details">
+        <div><dt>Telefono</dt><dd><a href="tel:+393476083082">+39 347 608 3082</a></dd></div>
+        <div><dt>PEC</dt><dd><a href="mailto:brollo.24053@oamilano.it">brollo.24053@oamilano.it</a></dd></div>
+        <div><dt>Iscrizione</dt><dd>Ordine degli Architetti di Milano n. 24053</dd></div>
+        <div><dt>Dati fiscali</dt><dd>P. IVA 14351510962<br>CF BRLRCR01E05D912K</dd></div>
+      </dl>
+    </section>
+  </main>
 
-        <article class="home-project project-opificio">
-          <a class="home-project-image" href="opificio-culturale.html" aria-label="Apri Opificio culturale"><img src="assets/opificio-culturale-home.jpg" alt="Spazio interno dell’Opificio culturale" loading="lazy"></a>
-          <div class="home-project-copy">
-            <h2><a href="opificio-culturale.html">Opificio culturale</a></h2>
-            <p class="project-deck">Spazio di aggregazione, bar, sala musica, spazio per una cena tra amici.</p>
-            <p class="project-place">Milano, 2026</p>
-          </div>
-        </article>
-      </section>
-
-      <section class="contact home-contact" id="contact" aria-labelledby="contact-title">
-        <h2 id="contact-title">Contacts</h2>
-        <p><a href="mailto:studio@riccardobrolloarchitetto.it">studio@riccardobrolloarchitetto.it</a></p>
-        <p><a href="tel:+393476083082">+39 347 608 3082</a></p>
-        <p><a href="mailto:brollo.24053@oamilano.it">brollo.24053@oamilano.it</a> <small>PEC</small></p>
-        <div class="legal"><span>Ordine degli Architetti di Milano n. 24053</span><span>P. IVA 14351510962</span><span>CF BRLRCR01E05D912K</span></div>
-      </section>
-    </main>
-    <footer><a href="#inizio">Riccardo Brollo Architetto</a></footer>
-  </body>
+  <nav class="bar" aria-label="Menu">
+    <a class="spiral" href="#top" aria-label="Riccardo Brollo Architetto"><img src="img/logo.png" alt=""></a>
+    <a href="#works">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="contacts-link" href="#contacts">contacts<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+  </nav>
+</body>
 </html>

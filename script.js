@@ -1,40 +1,26 @@
-// R B A turns into the spiral while scrolling and the bar moves to the top,
-// the endless carousel drifts and can be dragged, project images are shown
-// one at a time, and a black dot cursor falls, bounces and
+// The bar scrolls up and sticks to the top while R B A scrolls away; the spiral
+// at the foot of every page leads back to the start. The endless carousel
+// drifts and can be dragged, project images are shown one at a time, and a
+// black dot cursor falls, bounces and
 // bursts into the next project. Press G to see the 12-column grid.
 
 (function () {
   const root = document.documentElement;
   const body = document.body;
   const mono = document.querySelector(".monogram");
-  const mark = document.querySelector(".mark");
+  const sign = document.querySelector(".sign a");
   const fadeTop = document.querySelector(".fade-top");
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const smooth = (t) => t * t * (3 - 2 * t);
 
-  function smallSize() {
-    return clamp(innerWidth * 0.036, 30, 52);
-  }
-
-  function markSize() {
-    return Math.round(clamp(innerWidth * 0.04, 38, 56));
-  }
-
-  // Size of the spiral and of the blurred band behind it
   function barHeight() {
     return document.querySelector(".bar")?.offsetHeight || 80;
   }
 
-  // Top of the spiral: centred on the bar once the bar sits at the top
-  function markTop() {
-    return (barHeight() - markSize()) / 2;
-  }
-
+  // Height of the blurred band behind the bar at the top
   function setTopBand() {
-    const m = markSize();
-    root.style.setProperty("--mark", m + "px");
     root.style.setProperty("--top-h", barHeight() + 40 + "px");
   }
 
@@ -89,133 +75,25 @@
     });
   });
 
-  /* R B A -> spiral */
+  /* Home: R B A stays big and scrolls away with the page */
 
-  if (mono && mark && !body.classList.contains("is-small")) {
-    let big = null;
-    let locked = false;
-    const intro = document.querySelector(".intro");
-
-    // A reload always starts from the landing
-    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-
-    function measure() {
-      mono.style.cssText = "";
-      const cs = getComputedStyle(mono);
-      const r = mono.getBoundingClientRect();
-      big = {
-        size: parseFloat(cs.fontSize),
-        top: parseFloat(cs.top),
-        width: r.width,
-      };
-      // Room kept on the first screen for the big letters
-      root.style.setProperty("--mono-h", Math.ceil(big.top + r.height) + "px");
-      update();
-    }
-
-    let lastT = -1;
-
-    function update(force) {
-      if (locked) return;
-      // Finished when the bar reaches the top of the screen
-      const t = clamp(scrollY / Math.max(1, innerHeight - barHeight()), 0, 1);
-      // Nothing to redraw once the spiral has settled
-      if (t === lastT && !force) return;
-      lastT = t;
-      // First the letters shrink into the corner, then they wind up into the spiral
-      const a = smooth(clamp(t / 0.7, 0, 1));
-      const b = smooth(clamp((t - 0.7) / 0.3, 0, 1));
-      const s = smallSize();
-      const m = markSize();
-      const lerp = (x, y, p) => x + (y - x) * p;
-
-      mono.style.fontSize = lerp(big.size, s, a) + "px";
-      // The spiral lands in its slot at the left of the bar and travels with it
-      const slot = document.querySelector(".bar").getBoundingClientRect().top + (barHeight() - m) / 2;
-      mark.style.top = slot + "px";
-      mono.style.top = lerp(big.top, slot + (m - s * 0.78) / 2, a) + "px";
-      mono.style.width = lerp(lerp(big.width, s * 2.3, a), m, b) + "px";
-      mono.style.opacity = 1 - b;
-      mono.style.transform = `rotate(${b * 120}deg) scale(${1 - b * 0.6})`;
-      mono.style.transformOrigin = `${m / 2}px ${(s * 0.78) / 2}px`;
-      mono.style.pointerEvents = b > 0.5 ? "none" : "";
-
-      mark.style.opacity = b;
-      mark.style.transform = `rotate(${(1 - b) * -300}deg) scale(${0.3 + b * 0.7})`;
-      mark.style.pointerEvents = b > 0.5 ? "auto" : "none";
-
-      // The buttons slide right as the spiral takes its place in the bar
-      root.style.setProperty("--slot", b);
-
-      if (t >= 1) lock();
-
+  if (mono && !body.classList.contains("is-small")) {
+    // The blurred band appears once the bar has reached the top
+    const band = () => {
+      const stuck = scrollY >= innerHeight - barHeight() - 1;
       if (fadeTop) {
-        fadeTop.style.setProperty("--top-o", a);
-        // A hidden band does not need to blur anything
-        fadeTop.classList.toggle("off", a === 0);
+        fadeTop.style.setProperty("--top-o", stuck ? 1 : 0);
+        fadeTop.classList.toggle("off", !stuck);
       }
-    }
+    };
+    onScroll(band);
+    addEventListener("resize", band);
+    band();
 
-    // Once past, the landing is gone: the page continues from the bar.
-    // Only the spiral (or a reload) brings it back.
-    function lock() {
-      if (locked) return;
-      locked = true;
-      const h = intro.offsetHeight;
-      body.classList.add("locked");
-      mark.style.top = "";
-      scrollBy({ top: -h, behavior: "instant" });
-    }
-
-    function unlock() {
-      locked = false;
-      body.classList.remove("locked");
-      scrollTo({ top: 0, behavior: "instant" });
-      update(true);
-    }
-
-    mark.addEventListener("click", (e) => {
+    sign?.addEventListener("click", (e) => {
       e.preventDefault();
-      if (locked) unlock();
-      else scrollTo({ top: 0, behavior: "instant" });
+      scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
     });
-
-    // Links to the sections below: leave the landing first, then glide there
-    document.querySelectorAll('.bar a[href^="#"]').forEach((a) => {
-      a.addEventListener("click", (e) => {
-        const target = document.querySelector(a.getAttribute("href"));
-        if (!target) return;
-        e.preventDefault();
-        if (!locked) { update(true); lockNow(); }
-        target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
-      });
-    });
-
-    // Jump straight to the final state, without the in-between animation
-    function lockNow() {
-      root.style.setProperty("--slot", 1);
-      mono.style.opacity = 0;
-      mono.style.pointerEvents = "none";
-      mark.style.opacity = 1;
-      mark.style.transform = "none";
-      mark.style.pointerEvents = "auto";
-      if (fadeTop) { fadeTop.style.setProperty("--top-o", 1); fadeTop.classList.remove("off"); }
-      locked = true;
-      body.classList.add("locked");
-      mark.style.top = "";
-    }
-
-    measure();
-    onScroll(update);
-    addEventListener("resize", () => { if (!locked) { measure(); update(true); } });
-
-    // Arriving with an anchor (e.g. from another page to #contacts)
-    if (location.hash && document.querySelector(location.hash)) {
-      lockNow();
-      requestAnimationFrame(() => document.querySelector(location.hash).scrollIntoView({ behavior: "instant" }));
-    } else {
-      scrollTo({ top: 0, behavior: "instant" });
-    }
   }
 
   /* Carousel: endless, drifts on its own, can be dragged */

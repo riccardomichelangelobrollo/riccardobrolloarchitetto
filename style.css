@@ -5,11 +5,11 @@
                Blocks on axis 1 stop at column 5: column 6 stays empty.
                Anything aligned right ends on the last column.
                The bar spans margin to margin, its three buttons equally
-               spaced after a first slot that holds the spiral. On the home
-               page it sits at the bottom of the first screen, scrolls up
-               with the page and stops at the top while R B A winds into the
-               spiral; then the landing is left behind until the spiral is
-               clicked. Elsewhere the bar starts at the top.
+               spaced. On the home page it sits at the bottom of the first
+               screen under the big R B A, scrolls up with the page and stops
+               at the top. Elsewhere the bar starts at the top.
+   6. Marks    R B A is the heading, the spiral is the signature: it closes
+               every page on axis 1 and leads back to the start.
    5b.         Carousel cards are three columns wide; list cards two.
    3. Space    Vertical spacing only from the scale below (multiples of 8px).
    4. Type     Seven sizes. Jost for logo, titles, labels and buttons;
@@ -180,7 +180,8 @@ h1, h2, h3 {
 .works { padding: var(--s6) 0; }
 
 .monogram {
-  position: fixed;
+  /* Part of the page: it scrolls away and comes back with it */
+  position: absolute;
   top: var(--s3);
   left: var(--margin);
   z-index: 20;
@@ -196,26 +197,8 @@ h1, h2, h3 {
 .monogram span:first-child { margin-left: -.06em; }
 .monogram span:last-child { margin-right: -.04em; }
 
-/* The spiral R B A winds up into, top-left */
-.mark {
-  position: fixed;
-  top: calc((var(--bar) - var(--mark, 48px)) / 2);
-  left: var(--margin);
-  z-index: 21;
-  width: var(--mark, 48px);
-  height: var(--mark, 48px);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.mark img { width: 100%; height: 100%; }
-
-.monogram,
-.mark { will-change: transform, opacity; }
-
-/* Inner pages start with the spiral */
+/* Inner pages have no landing */
 .is-small .monogram { display: none; }
-.is-small .mark { opacity: 1; pointer-events: auto; }
 .is-small .fade-top { --top-o: 1; }
 
 /* Bar: in the page flow, it scrolls up and sticks to the top */
@@ -235,15 +218,6 @@ h1, h2, h3 {
   line-height: 1;
 }
 
-/* The spiral takes the first slot of the bar: on the home page the slot
-   opens as R B A winds into the spiral; elsewhere it is open from the start */
-.bar { padding-left: calc(var(--margin) + (var(--mark, 48px) + var(--s4)) * var(--slot, 1)); }
-
-/* Once the landing has been left it is gone until the spiral is clicked */
-.locked .intro,
-.locked .monogram { display: none; }
-.locked .mark { opacity: 1 !important; transform: none !important; pointer-events: auto !important; }
-.locked .fade-top { --top-o: 1 !important; visibility: visible !important; }
 
 .bar a { display: inline-flex; align-items: center; transition: opacity .2s; }
 .bar a:hover,
@@ -555,6 +529,25 @@ h1, h2, h3 {
 }
 
 .next:hover strong { opacity: .6; }
+
+/* Signature: the spiral closes every page and leads back to the start */
+
+.sign { padding-top: var(--s4); padding-bottom: var(--s4); }
+
+.sign a {
+  grid-column: 1 / span 1;
+  display: block;
+  width: var(--s4);
+  height: var(--s4);
+}
+
+.sign img {
+  width: 100%;
+  height: 100%;
+  transition: transform .9s cubic-bezier(.2, .7, .2, 1);
+}
+
+.sign a:hover img { transform: rotate(-360deg); }
 
 /* Cursor: a black dot */
 

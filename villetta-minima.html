@@ -1,45 +1,56 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Villetta minima — Riccardo Brollo Architetto</title>
-  <meta name="description" content="Una piccola villetta di 95 mq di impronta a terra, rivolta verso il sole.">
-  <link rel="icon" href="img/logo.png">
+  <meta name="description" content="A small house with a 95 m² footprint, turned towards the sun.">
+  <link rel="icon" href="img/spirale.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
-<body id="top">
-  <header class="top">
-    <a href="index.html" aria-label="Riccardo Brollo Architetto">R B A</a>
-    <a href="index.html#works">← works</a>
-  </header>
-
+<body id="top" class="is-small">
+  <div class="fade fade-top" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
+  <p class="monogram"><a href="index.html" aria-label="Riccardo Brollo Architetto"><span>R</span><span>B</span><span>A</span></a></p>
+  <a class="mark" href="index.html" aria-label="Riccardo Brollo Architetto"><img src="img/spirale.png" alt=""></a>
   <main>
-    <section class="project-head">
+    <section class="head grid">
       <h1>Villetta minima</h1>
-      <div class="text">
-        <p>Una piccola villetta di 95 mq di impronta a terra, rivolta verso il sole.</p>
-        <p class="muted">Milano, 2026</p>
+      <dl class="facts axis-1">
+        <div><dt class="label">Location</dt><dd>Milan</dd></div>
+        <div><dt class="label">Year</dt><dd>2026</dd></div>
+      </dl>
+      <div class="text axis-7">
+        <p>A small house with a 95 m² footprint, turned towards the sun.</p>
       </div>
     </section>
 
-    <section class="gallery">
-    <img src="img/villetta-minima/01.jpg" width="819" height="1024" alt="Villetta minima" loading="eager">
-    <img src="img/villetta-minima/02.jpg" width="818" height="1024" alt="Villetta minima" loading="lazy">
-    <img src="img/villetta-minima/03.jpg" width="818" height="1024" alt="Villetta minima" loading="lazy">
-    <img src="img/villetta-minima/04.jpg" width="819" height="1024" alt="Villetta minima" loading="lazy">
+    <section class="strip" aria-label="Images">
+      <div class="strip-track">
+        <figure style="--ar: 1440 / 1800"><img src="img/villetta-minima/01.jpg" width="1440" height="1800" alt="Villetta minima" loading="eager" decoding="async"></figure>
+        <figure style="--ar: 819 / 1024"><img src="img/villetta-minima/02.jpg" width="819" height="1024" alt="Villetta minima" loading="eager" decoding="async"></figure>
+        <figure style="--ar: 818 / 1024"><img src="img/villetta-minima/03.jpg" width="818" height="1024" alt="Villetta minima" loading="eager" decoding="async"></figure>
+        <figure style="--ar: 818 / 1024"><img src="img/villetta-minima/04.jpg" width="818" height="1024" alt="Villetta minima" loading="lazy" decoding="async"></figure>
+        <figure style="--ar: 819 / 1024"><img src="img/villetta-minima/05.jpg" width="819" height="1024" alt="Villetta minima" loading="lazy" decoding="async"></figure>
+      </div>
+      <div class="strip-ui grid">
+        <span class="count">01 / 05</span>
+        <span class="hint">Drag, scroll or click to enlarge</span>
+        <span class="arrows"><button type="button" class="back" aria-label="Previous"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12 H3 M11.5 3.5 L3 12 L11.5 20.5"/></svg></button><button type="button" class="fwd" aria-label="Next"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5"/></svg></button></span>
+      </div>
     </section>
 
-    <a class="next" href="opificio-culturale.html"><span>Progetto successivo</span><strong>Opificio culturale →</strong></a>
+    <a class="next" href="opificio-culturale.html"><span class="label muted">Next project</span><strong>Opificio culturale →</strong></a>
   </main>
 
+  <div class="fade fade-bottom" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
   <nav class="bar" aria-label="Menu">
-    <a class="spiral" href="index.html" aria-label="Riccardo Brollo Architetto"><img src="img/logo.png" alt=""></a>
-    <a href="index.html#works">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
     <a class="contacts-link" href="index.html#contacts">contacts<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="works-link" href="works.html" aria-current="page">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="research-link" href="research.html">research<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
   </nav>
 </body>
 </html>

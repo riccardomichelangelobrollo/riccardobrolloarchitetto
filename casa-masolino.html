@@ -1,53 +1,63 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Casa Masolino — Riccardo Brollo Architetto</title>
-  <meta name="description" content="Una casa per un copywriter, all’ultimo piano.">
-  <link rel="icon" href="img/logo.png">
+  <meta name="description" content="A home for a copywriter, on the top floor.">
+  <link rel="icon" href="img/spirale.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
-<body id="top">
-  <header class="top">
-    <a href="index.html" aria-label="Riccardo Brollo Architetto">R B A</a>
-    <a href="index.html#works">← works</a>
-  </header>
-
+<body id="top" class="is-small">
+  <div class="fade fade-top" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
+  <p class="monogram"><a href="index.html" aria-label="Riccardo Brollo Architetto"><span>R</span><span>B</span><span>A</span></a></p>
+  <a class="mark" href="index.html" aria-label="Riccardo Brollo Architetto"><img src="img/spirale.png" alt=""></a>
   <main>
-    <section class="project-head">
+    <section class="head grid">
       <h1>Casa Masolino</h1>
-      <div class="text">
-        <p>Una casa per un copywriter, all’ultimo piano.</p>
-        <p>70 mq organizzati attorno alla cucina, cuore pulsante della casa: pareti inclinate disegnano piccoli palchi di vita domestica, prospettive che si aprono una nell’altra.</p>
-        <p>La cucina, in rosso, è il focolare. Lo spazio di Michele, che ama invitare amici, cucinare, stare a tavola. Da qui nasce il passavivande: non solo per il cibo, ma per due parole in più con chi cucina.</p>
-        <p class="muted">Milano, 2026</p>
+      <dl class="facts axis-1">
+        <div><dt class="label">Location</dt><dd>Milan</dd></div>
+        <div><dt class="label">Year</dt><dd>2026</dd></div>
+      </dl>
+      <div class="text axis-7">
+        <p>A home for a copywriter, on the top floor.</p>
+        <p>70 m² organised around the kitchen, the beating heart of the house: inclined walls draw small stages of domestic life, perspectives opening one into another.</p>
+        <p>The kitchen, in red, is the hearth. It is the space of Michele, who loves having friends over, cooking and sitting at the table. This is where the serving hatch comes from: not only for food, but for a few more words with whoever is cooking.</p>
       </div>
     </section>
 
-    <section class="gallery">
-    <img src="img/casa-masolino/01.jpg" width="768" height="1152" alt="Casa Masolino" loading="eager">
-    <img src="img/casa-masolino/02.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy">
-    <img class="wide" src="img/casa-masolino/03.jpg" width="1800" height="1199" alt="Casa Masolino" loading="lazy">
-    <img class="wide" src="img/casa-masolino/04.jpg" width="1800" height="1200" alt="Casa Masolino" loading="lazy">
-    <img src="img/casa-masolino/05.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy">
-    <img src="img/casa-masolino/06.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy">
-    <img src="img/casa-masolino/07.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy">
-    <img src="img/casa-masolino/08.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy">
-    <img src="img/casa-masolino/09.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy">
-    <img src="img/casa-masolino/10.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy">
+    <section class="strip" aria-label="Images">
+      <div class="strip-track">
+        <figure style="--ar: 768 / 1152"><img src="img/casa-masolino/01.jpg" width="768" height="1152" alt="Casa Masolino" loading="eager" decoding="async"></figure>
+        <figure style="--ar: 768 / 1152"><img src="img/casa-masolino/02.jpg" width="768" height="1152" alt="Casa Masolino" loading="eager" decoding="async"></figure>
+        <figure style="--ar: 1800 / 1199"><img src="img/casa-masolino/03.jpg" width="1800" height="1199" alt="Casa Masolino" loading="eager" decoding="async"></figure>
+        <figure style="--ar: 1800 / 1200"><img src="img/casa-masolino/04.jpg" width="1800" height="1200" alt="Casa Masolino" loading="lazy" decoding="async"></figure>
+        <figure style="--ar: 768 / 1152"><img src="img/casa-masolino/05.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy" decoding="async"></figure>
+        <figure style="--ar: 768 / 1152"><img src="img/casa-masolino/06.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy" decoding="async"></figure>
+        <figure style="--ar: 768 / 1152"><img src="img/casa-masolino/07.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy" decoding="async"></figure>
+        <figure style="--ar: 768 / 1152"><img src="img/casa-masolino/08.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy" decoding="async"></figure>
+        <figure style="--ar: 768 / 1152"><img src="img/casa-masolino/09.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy" decoding="async"></figure>
+        <figure style="--ar: 768 / 1152"><img src="img/casa-masolino/10.jpg" width="768" height="1152" alt="Casa Masolino" loading="lazy" decoding="async"></figure>
+      </div>
+      <div class="strip-ui grid">
+        <span class="count">01 / 10</span>
+        <span class="hint">Drag, scroll or click to enlarge</span>
+        <span class="arrows"><button type="button" class="back" aria-label="Previous"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12 H3 M11.5 3.5 L3 12 L11.5 20.5"/></svg></button><button type="button" class="fwd" aria-label="Next"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5"/></svg></button></span>
+      </div>
     </section>
 
-    <a class="next" href="villetta-minima.html"><span>Progetto successivo</span><strong>Villetta minima →</strong></a>
+    <a class="next" href="casa-blocco.html"><span class="label muted">Next project</span><strong>Casa Blocco →</strong></a>
   </main>
 
+  <div class="fade fade-bottom" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
   <nav class="bar" aria-label="Menu">
-    <a class="spiral" href="index.html" aria-label="Riccardo Brollo Architetto"><img src="img/logo.png" alt=""></a>
-    <a href="index.html#works">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
     <a class="contacts-link" href="index.html#contacts">contacts<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="works-link" href="works.html" aria-current="page">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="research-link" href="research.html">research<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
   </nav>
 </body>
 </html>

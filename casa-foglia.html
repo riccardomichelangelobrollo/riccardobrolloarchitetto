@@ -1,46 +1,53 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Casa Foglia — Riccardo Brollo Architetto</title>
-  <meta name="description" content="Casa Foglia, un progetto di Riccardo Brollo Architetto.">
-  <link rel="icon" href="img/logo.png">
+  <meta name="description" content="Casa Foglia, a project by Riccardo Brollo Architetto.">
+  <link rel="icon" href="img/spirale.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
-<body id="top">
-  <header class="top">
-    <a href="index.html" aria-label="Riccardo Brollo Architetto">R B A</a>
-    <a href="index.html#works">← works</a>
-  </header>
-
+<body id="top" class="is-small">
+  <div class="fade fade-top" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
+  <p class="monogram"><a href="index.html" aria-label="Riccardo Brollo Architetto"><span>R</span><span>B</span><span>A</span></a></p>
+  <a class="mark" href="index.html" aria-label="Riccardo Brollo Architetto"><img src="img/spirale.png" alt=""></a>
   <main>
-    <section class="project-head">
+    <section class="head grid">
       <h1>Casa Foglia</h1>
-      <div class="text">
+      <div class="text axis-7">
 
       </div>
     </section>
 
-    <section class="gallery">
-    <img src="img/casa-foglia/01.jpg" width="1086" height="1448" alt="Casa Foglia" loading="eager">
-    <img class="wide" src="img/casa-foglia/02.jpg" width="1448" height="1086" alt="Casa Foglia" loading="lazy">
-    <img src="img/casa-foglia/03.jpg" width="1086" height="1448" alt="Casa Foglia" loading="lazy">
-    <img src="img/casa-foglia/04.jpg" width="1254" height="1254" alt="Casa Foglia" loading="lazy">
-    <img src="img/casa-foglia/05.jpg" width="1086" height="1448" alt="Casa Foglia" loading="lazy">
-    <img src="img/casa-foglia/06.jpg" width="1086" height="1448" alt="Casa Foglia" loading="lazy">
+    <section class="strip" aria-label="Images">
+      <div class="strip-track">
+        <figure style="--ar: 1086 / 1448"><img src="img/casa-foglia/01.jpg" width="1086" height="1448" alt="Casa Foglia" loading="eager" decoding="async"></figure>
+        <figure style="--ar: 1448 / 1086"><img src="img/casa-foglia/02.jpg" width="1448" height="1086" alt="Casa Foglia" loading="eager" decoding="async"></figure>
+        <figure style="--ar: 1086 / 1448"><img src="img/casa-foglia/03.jpg" width="1086" height="1448" alt="Casa Foglia" loading="eager" decoding="async"></figure>
+        <figure style="--ar: 1254 / 1254"><img src="img/casa-foglia/04.jpg" width="1254" height="1254" alt="Casa Foglia" loading="lazy" decoding="async"></figure>
+        <figure style="--ar: 1086 / 1448"><img src="img/casa-foglia/05.jpg" width="1086" height="1448" alt="Casa Foglia" loading="lazy" decoding="async"></figure>
+        <figure style="--ar: 1086 / 1448"><img src="img/casa-foglia/06.jpg" width="1086" height="1448" alt="Casa Foglia" loading="lazy" decoding="async"></figure>
+      </div>
+      <div class="strip-ui grid">
+        <span class="count">01 / 06</span>
+        <span class="hint">Drag, scroll or click to enlarge</span>
+        <span class="arrows"><button type="button" class="back" aria-label="Previous"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12 H3 M11.5 3.5 L3 12 L11.5 20.5"/></svg></button><button type="button" class="fwd" aria-label="Next"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5"/></svg></button></span>
+      </div>
     </section>
 
-    <a class="next" href="casa-masolino.html"><span>Progetto successivo</span><strong>Casa Masolino →</strong></a>
+    <a class="next" href="casa-masolino.html"><span class="label muted">Next project</span><strong>Casa Masolino →</strong></a>
   </main>
 
+  <div class="fade fade-bottom" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
   <nav class="bar" aria-label="Menu">
-    <a class="spiral" href="index.html" aria-label="Riccardo Brollo Architetto"><img src="img/logo.png" alt=""></a>
-    <a href="index.html#works">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
     <a class="contacts-link" href="index.html#contacts">contacts<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="works-link" href="works.html" aria-current="page">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="research-link" href="research.html">research<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
   </nav>
 </body>
 </html>

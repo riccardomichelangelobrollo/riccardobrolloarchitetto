@@ -16,6 +16,11 @@
   <div class="fade fade-top" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
   <p class="monogram"><a href="index.html" aria-label="Riccardo Brollo Architetto"><span>R</span><span>B</span><span>A</span></a></p>
   <a class="mark" href="index.html" aria-label="Riccardo Brollo Architetto"><img src="img/spirale.png" alt=""></a>
+  <nav class="bar" aria-label="Menu">
+    <a class="contacts-link" href="index.html#contacts">contacts<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="works-link" href="works.html">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="research-link" href="research.html" aria-current="page">research<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+  </nav>
   <main>
     <section class="head grid">
       <h1>5.37</h1>
@@ -34,45 +39,38 @@
       </div>
     </section>
 
-    <section class="strip" aria-label="Images">
-      <div class="strip-track">
-        <figure style="--ar: 1800 / 1351"><img src="img/5-37/01.jpg" width="1800" height="1351" alt="5.37" loading="eager" decoding="async"></figure>
-        <figure style="--ar: 1356 / 1800"><img src="img/5-37/02.jpg" width="1356" height="1800" alt="5.37" loading="eager" decoding="async"></figure>
-        <figure style="--ar: 1350 / 1800"><img src="img/5-37/03.jpg" width="1350" height="1800" alt="5.37" loading="eager" decoding="async"></figure>
-        <figure style="--ar: 1350 / 1800"><img src="img/5-37/04.jpg" width="1350" height="1800" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure style="--ar: 1350 / 1800"><img src="img/5-37/05.jpg" width="1350" height="1800" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure style="--ar: 1800 / 1350"><img src="img/5-37/06.jpg" width="1800" height="1350" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure style="--ar: 1800 / 1350"><img src="img/5-37/07.jpg" width="1800" height="1350" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure style="--ar: 1350 / 1800"><img src="img/5-37/08.jpg" width="1350" height="1800" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure style="--ar: 1800 / 1346"><img src="img/5-37/09.jpg" width="1800" height="1346" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure style="--ar: 1350 / 1800"><img src="img/5-37/10.jpg" width="1350" height="1800" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure style="--ar: 1350 / 1800"><img src="img/5-37/11.jpg" width="1350" height="1800" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure style="--ar: 1800 / 1200"><img src="img/5-37/12.jpg" width="1800" height="1200" alt="5.37" loading="lazy" decoding="async"></figure>
-        <div class="divider"><span class="label">Drawings</span></div>
-        <figure class="drawing" style="--ar: 1353 / 1800"><img src="img/5-37/13.jpg" width="1353" height="1800" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure class="drawing" style="--ar: 1285 / 1800"><img src="img/5-37/14.jpg" width="1285" height="1800" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure class="drawing" style="--ar: 1934 / 2400"><img src="img/5-37/15.jpg" width="1934" height="2400" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure class="drawing" style="--ar: 2218 / 2400"><img src="img/5-37/16.jpg" width="2218" height="2400" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure class="drawing" style="--ar: 2218 / 2400"><img src="img/5-37/17.jpg" width="2218" height="2400" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure class="drawing" style="--ar: 2218 / 2400"><img src="img/5-37/18.jpg" width="2218" height="2400" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure class="drawing" style="--ar: 2079 / 1472"><img src="img/5-37/19.jpg" width="2079" height="1472" alt="5.37" loading="lazy" decoding="async"></figure>
-        <figure class="drawing" style="--ar: 2400 / 1181"><img src="img/5-37/20.jpg" width="2400" height="1181" alt="5.37" loading="lazy" decoding="async"></figure>
+    <section class="viewer" aria-label="Images">
+      <div class="viewer-stage">
+        <figure class="on"><img src="img/5-37/01.jpg" width="1800" height="1351" alt="5.37" decoding="async"></figure>
+        <figure><img src="img/5-37/02.jpg" width="1356" height="1800" alt="5.37" decoding="async"></figure>
+        <figure><img data-src="img/5-37/03.jpg" width="1350" height="1800" alt="5.37" decoding="async"></figure>
+        <figure><img data-src="img/5-37/04.jpg" width="1350" height="1800" alt="5.37" decoding="async"></figure>
+        <figure><img data-src="img/5-37/05.jpg" width="1350" height="1800" alt="5.37" decoding="async"></figure>
+        <figure><img data-src="img/5-37/06.jpg" width="1800" height="1350" alt="5.37" decoding="async"></figure>
+        <figure><img data-src="img/5-37/07.jpg" width="1800" height="1350" alt="5.37" decoding="async"></figure>
+        <figure><img data-src="img/5-37/08.jpg" width="1350" height="1800" alt="5.37" decoding="async"></figure>
+        <figure><img data-src="img/5-37/09.jpg" width="1800" height="1346" alt="5.37" decoding="async"></figure>
+        <figure><img data-src="img/5-37/10.jpg" width="1350" height="1800" alt="5.37" decoding="async"></figure>
+        <figure><img data-src="img/5-37/11.jpg" width="1350" height="1800" alt="5.37" decoding="async"></figure>
+        <figure><img data-src="img/5-37/12.jpg" width="1800" height="1200" alt="5.37" decoding="async"></figure>
+        <figure data-group="Drawings"><img data-src="img/5-37/13.jpg" width="1353" height="1800" alt="5.37" decoding="async"></figure>
+        <figure data-group="Drawings"><img data-src="img/5-37/14.jpg" width="1285" height="1800" alt="5.37" decoding="async"></figure>
+        <figure data-group="Drawings"><img data-src="img/5-37/15.jpg" width="1934" height="2400" alt="5.37" decoding="async"></figure>
+        <figure data-group="Drawings"><img data-src="img/5-37/16.jpg" width="2218" height="2400" alt="5.37" decoding="async"></figure>
+        <figure data-group="Drawings"><img data-src="img/5-37/17.jpg" width="2218" height="2400" alt="5.37" decoding="async"></figure>
+        <figure data-group="Drawings"><img data-src="img/5-37/18.jpg" width="2218" height="2400" alt="5.37" decoding="async"></figure>
+        <figure data-group="Drawings"><img data-src="img/5-37/19.jpg" width="2079" height="1472" alt="5.37" decoding="async"></figure>
+        <figure data-group="Drawings"><img src="img/5-37/20.jpg" width="2400" height="1181" alt="5.37" decoding="async"></figure>
+        <button type="button" class="back" aria-label="Previous"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12 H3 M11.5 3.5 L3 12 L11.5 20.5"/></svg></button>
+        <button type="button" class="fwd" aria-label="Next"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5"/></svg></button>
       </div>
-      <div class="strip-ui grid">
+      <div class="viewer-ui grid">
         <span class="count">01 / 20</span>
-        <span class="hint">Drag, scroll or click to enlarge</span>
-        <span class="arrows"><button type="button" class="back" aria-label="Previous"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12 H3 M11.5 3.5 L3 12 L11.5 20.5"/></svg></button><button type="button" class="fwd" aria-label="Next"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5"/></svg></button></span>
+        <span class="note label muted"></span>
       </div>
     </section>
 
     <a class="next" href="taboo.html"><span class="label muted">Next project</span><strong>Taboo →</strong></a>
   </main>
-
-  <div class="fade fade-bottom" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
-  <nav class="bar" aria-label="Menu">
-    <a class="contacts-link" href="index.html#contacts">contacts<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
-    <a class="works-link" href="works.html">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
-    <a class="research-link" href="research.html" aria-current="page">research<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
-  </nav>
 </body>
 </html>

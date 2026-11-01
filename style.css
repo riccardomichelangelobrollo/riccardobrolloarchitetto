@@ -4,8 +4,13 @@
    2. Axes     Text starts on column 1 or on column 7 (the half).
                Blocks on axis 1 stop at column 5: column 6 stays empty.
                Anything aligned right ends on the last column.
-               The bottom bar spans margin to margin, its three buttons
-               equally spaced.
+               The bar spans margin to margin, its three buttons equally
+               spaced after a first slot that holds the spiral. On the home
+               page it sits at the bottom of the first screen, scrolls up
+               with the page and stops at the top while R B A winds into the
+               spiral; then the landing is left behind until the spiral is
+               clicked. Elsewhere the bar starts at the top.
+   5b.         Carousel cards are three columns wide; list cards two.
    3. Space    Vertical spacing only from the scale below (multiples of 8px).
    4. Type     Seven sizes. Jost for logo, titles, labels and buttons;
                Times for content.
@@ -61,7 +66,6 @@ html { scroll-behavior: smooth; scroll-padding-top: var(--s6); }
 
 body {
   margin: 0;
-  padding-bottom: var(--bar);
   background: var(--bg);
   color: var(--ink);
   font-family: var(--text);
@@ -157,11 +161,9 @@ h1, h2, h3 {
 
 .fade > div { position: absolute; inset: 0; }
 
-.fade-bottom { bottom: 0; height: calc(var(--bar) + var(--s4)); }
 .fade-top { top: 0; height: var(--top-h, 120px); opacity: var(--top-o, 0); }
 .fade-top.off { visibility: hidden; }
 
-.fade-bottom > div { --dir: to bottom; }
 .fade-top > div { --dir: to top; }
 
 .fade > div:nth-child(1) { backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); -webkit-mask-image: linear-gradient(var(--dir), transparent 0%, #000 40%); mask-image: linear-gradient(var(--dir), transparent 0%, #000 40%); }
@@ -197,7 +199,7 @@ h1, h2, h3 {
 /* The spiral R B A winds up into, top-left */
 .mark {
   position: fixed;
-  top: var(--s2);
+  top: calc((var(--bar) - var(--mark, 48px)) / 2);
   left: var(--margin);
   z-index: 21;
   width: var(--mark, 48px);
@@ -216,13 +218,11 @@ h1, h2, h3 {
 .is-small .mark { opacity: 1; pointer-events: auto; }
 .is-small .fade-top { --top-o: 1; }
 
-/* Bottom bar: from margin to margin, three buttons with equal space between them */
+/* Bar: in the page flow, it scrolls up and sticks to the top */
 
 .bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: sticky;
+  top: 0;
   z-index: 20;
   display: flex;
   justify-content: space-between;
@@ -235,9 +235,22 @@ h1, h2, h3 {
   line-height: 1;
 }
 
+/* The spiral takes the first slot of the bar: on the home page the slot
+   opens as R B A winds into the spiral; elsewhere it is open from the start */
+.bar { padding-left: calc(var(--margin) + (var(--mark, 48px) + var(--s4)) * var(--slot, 1)); }
+
+/* Once the landing has been left it is gone until the spiral is clicked */
+.locked .intro,
+.locked .monogram { display: none; }
+.locked .mark { opacity: 1 !important; transform: none !important; pointer-events: auto !important; }
+.locked .fade-top { --top-o: 1 !important; visibility: visible !important; }
+
 .bar a { display: inline-flex; align-items: center; transition: opacity .2s; }
 .bar a:hover,
 .bar a[aria-current="page"] { opacity: .45; }
+
+/* Inner pages: the bar already takes its own height at the top */
+.is-small .head { padding-top: var(--s5); }
 
 .arrow {
   width: .7em;
@@ -303,7 +316,7 @@ h1, h2, h3 {
 
 .card .where { color: var(--ink); }
 
-/* Carousel: endless, every card two columns wide */
+/* Carousel: endless, every card three columns wide */
 
 .carousel {
   display: flex;
@@ -319,7 +332,7 @@ h1, h2, h3 {
 .carousel.dragging { cursor: grabbing; }
 .carousel.dragging a { pointer-events: none; }
 
-.carousel .card { flex: 0 0 calc(2 * var(--col) + var(--gap)); }
+.carousel .card { flex: 0 0 calc(3 * var(--col) + 2 * var(--gap)); }
 
 /* Page head: title across, then the two axes */
 
@@ -413,93 +426,78 @@ h1, h2, h3 {
   .contacts .facts { grid-template-columns: 1fr; }
 }
 
-/* Project gallery: one row that scrolls sideways, all images the same height */
+/* Project images: one at a time, arrows on the sides, counter below */
 
-.strip { padding-bottom: var(--s5); }
+.viewer { padding-bottom: var(--s5); }
 
-.strip-track {
-  --h: clamp(260px, 52vh, 560px);
+.viewer-stage {
+  --side: var(--s5);
+  position: relative;
+  height: clamp(320px, 66vh, 780px);
+  margin: 0 var(--margin);
+}
+
+.viewer-stage figure {
+  position: absolute;
+  inset: 0 var(--side);
   display: flex;
-  align-items: flex-end;
-  gap: var(--gap);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding: 0 var(--margin);
-  scrollbar-width: none;
-  cursor: grab;
-}
-
-.strip-track::-webkit-scrollbar { display: none; }
-.strip-track.dragging { cursor: grabbing; }
-.strip-track.dragging img { pointer-events: none; }
-
-.strip-track figure {
-  flex: 0 0 auto;
-  height: var(--h);
-  aspect-ratio: var(--ar);
+  align-items: center;
+  justify-content: center;
   margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
 }
 
-.strip-track img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+.viewer-stage figure.on { opacity: 1; pointer-events: auto; cursor: zoom-in; }
+
+.viewer-stage img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
   border-radius: var(--radius);
-  background: var(--line);
   -webkit-user-drag: none;
   user-select: none;
 }
 
-/* Drawings sit on white, outlined by a hairline */
-.strip-track .drawing img { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
+/* Drawings are outlined by a hairline */
+.viewer-stage figure[data-group] img { box-shadow: 0 0 0 1px var(--line); }
 
-.strip-track .divider {
-  flex: 0 0 auto;
-  align-self: stretch;
-  display: flex;
-  align-items: flex-end;
-  padding: 0 var(--s2);
-  border-left: 1px solid var(--line);
+.viewer-stage button {
+  position: absolute;
+  top: 50%;
+  display: inline-flex;
+  padding: var(--s1);
+  font-family: var(--brand);
+  font-size: var(--fs-5);
+  line-height: 0;
+  transform: translateY(-50%);
+  transition: opacity .2s;
 }
 
-.strip-track .divider .label { writing-mode: vertical-rl; transform: rotate(180deg); }
+.viewer-stage button:hover { opacity: .45; }
+.viewer-stage .back { left: calc(-1 * var(--s1)); }
+.viewer-stage .fwd { right: calc(-1 * var(--s1)); }
 
-.strip-ui {
-  align-items: center;
-  margin-top: var(--s2);
+.viewer-ui {
+  align-items: baseline;
+  margin-top: var(--s3);
   font-size: var(--fs-2);
 }
 
-.strip-ui .count { grid-column: 1 / span 6; font-variant-numeric: tabular-nums; }
-.strip-ui .hint { grid-column: 7 / span 4; color: var(--muted); }
-.strip-ui .arrows { grid-column: 11 / -1; justify-self: end; display: flex; gap: var(--s1); }
-
-.strip-ui button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  font-family: var(--brand);
-  font-size: var(--fs-3);
-  transition: background .2s, color .2s;
-}
-
-.strip-ui button:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.viewer-ui .count { grid-column: 1 / span 5; font-variant-numeric: tabular-nums; }
+.viewer-ui .note { grid-column: 7 / -1; }
 
 @media (max-width: 1024px) {
-  .strip-ui .count { grid-column: 1 / span 4; }
-  .strip-ui .hint { grid-column: 5 / span 2; }
-  .strip-ui .arrows { grid-column: 7 / -1; }
+  .viewer-ui .count { grid-column: 1 / span 3; }
+  .viewer-ui .note { grid-column: 5 / -1; }
 }
 
 @media (max-width: 640px) {
-  .strip-track { --h: 40vh; }
-  .strip-ui .count { grid-column: 1 / span 2; }
-  .strip-ui .hint { display: none; }
-  .strip-ui .arrows { grid-column: 3 / -1; }
+  .viewer-stage { --side: var(--s4); height: 56vh; }
+  .viewer-ui .count { grid-column: 1 / span 2; }
+  .viewer-ui .note { grid-column: 3 / -1; }
 }
 
 /* Full-screen view of one image */

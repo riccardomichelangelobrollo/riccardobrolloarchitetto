@@ -1,5 +1,6 @@
-// R B A turns into the spiral while scrolling, the endless carousel drifts and
-// scrolls with drag and wheel, and a black dot cursor falls, bounces and
+// R B A turns into the spiral while scrolling and the bar moves to the top,
+// the endless carousel drifts and can be dragged, project images are shown
+// one at a time, and a black dot cursor falls, bounces and
 // bursts into the next project. Press G to see the 12-column grid.
 
 (function () {
@@ -22,10 +23,19 @@
   }
 
   // Size of the spiral and of the blurred band behind it
+  function barHeight() {
+    return document.querySelector(".bar")?.offsetHeight || 80;
+  }
+
+  // Top of the spiral: centred on the bar once the bar sits at the top
+  function markTop() {
+    return (barHeight() - markSize()) / 2;
+  }
+
   function setTopBand() {
     const m = markSize();
     root.style.setProperty("--mark", m + "px");
-    root.style.setProperty("--top-h", 18 + m + 40 + "px");
+    root.style.setProperty("--top-h", barHeight() + 40 + "px");
   }
 
   // Page width without the scrollbar, so grid columns can be measured in CSS
@@ -83,6 +93,11 @@
 
   if (mono && mark && !body.classList.contains("is-small")) {
     let big = null;
+    let locked = false;
+    const intro = document.querySelector(".intro");
+
+    // A reload always starts from the landing
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
     function measure() {
       mono.style.cssText = "";
@@ -101,7 +116,9 @@
     let lastT = -1;
 
     function update(force) {
-      const t = clamp(scrollY / (innerHeight * 0.6), 0, 1);
+      if (locked) return;
+      // Finished when the bar reaches the top of the screen
+      const t = clamp(scrollY / Math.max(1, innerHeight - barHeight()), 0, 1);
       // Nothing to redraw once the spiral has settled
       if (t === lastT && !force) return;
       lastT = t;
@@ -113,7 +130,10 @@
       const lerp = (x, y, p) => x + (y - x) * p;
 
       mono.style.fontSize = lerp(big.size, s, a) + "px";
-      mono.style.top = lerp(big.top, 18 + (m - s * 0.78) / 2, a) + "px";
+      // The spiral lands in its slot at the left of the bar and travels with it
+      const slot = document.querySelector(".bar").getBoundingClientRect().top + (barHeight() - m) / 2;
+      mark.style.top = slot + "px";
+      mono.style.top = lerp(big.top, slot + (m - s * 0.78) / 2, a) + "px";
       mono.style.width = lerp(lerp(big.width, s * 2.3, a), m, b) + "px";
       mono.style.opacity = 1 - b;
       mono.style.transform = `rotate(${b * 120}deg) scale(${1 - b * 0.6})`;
@@ -124,6 +144,11 @@
       mark.style.transform = `rotate(${(1 - b) * -300}deg) scale(${0.3 + b * 0.7})`;
       mark.style.pointerEvents = b > 0.5 ? "auto" : "none";
 
+      // The buttons slide right as the spiral takes its place in the bar
+      root.style.setProperty("--slot", b);
+
+      if (t >= 1) lock();
+
       if (fadeTop) {
         fadeTop.style.setProperty("--top-o", a);
         // A hidden band does not need to blur anything
@@ -131,12 +156,69 @@
       }
     }
 
+    // Once past, the landing is gone: the page continues from the bar.
+    // Only the spiral (or a reload) brings it back.
+    function lock() {
+      if (locked) return;
+      locked = true;
+      const h = intro.offsetHeight;
+      body.classList.add("locked");
+      mark.style.top = "";
+      scrollBy({ top: -h, behavior: "instant" });
+    }
+
+    function unlock() {
+      locked = false;
+      body.classList.remove("locked");
+      scrollTo({ top: 0, behavior: "instant" });
+      update(true);
+    }
+
+    mark.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (locked) unlock();
+      else scrollTo({ top: 0, behavior: "instant" });
+    });
+
+    // Links to the sections below: leave the landing first, then glide there
+    document.querySelectorAll('.bar a[href^="#"]').forEach((a) => {
+      a.addEventListener("click", (e) => {
+        const target = document.querySelector(a.getAttribute("href"));
+        if (!target) return;
+        e.preventDefault();
+        if (!locked) { update(true); lockNow(); }
+        target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+      });
+    });
+
+    // Jump straight to the final state, without the in-between animation
+    function lockNow() {
+      root.style.setProperty("--slot", 1);
+      mono.style.opacity = 0;
+      mono.style.pointerEvents = "none";
+      mark.style.opacity = 1;
+      mark.style.transform = "none";
+      mark.style.pointerEvents = "auto";
+      if (fadeTop) { fadeTop.style.setProperty("--top-o", 1); fadeTop.classList.remove("off"); }
+      locked = true;
+      body.classList.add("locked");
+      mark.style.top = "";
+    }
+
     measure();
     onScroll(update);
-    addEventListener("resize", () => { measure(); update(true); });
+    addEventListener("resize", () => { if (!locked) { measure(); update(true); } });
+
+    // Arriving with an anchor (e.g. from another page to #contacts)
+    if (location.hash && document.querySelector(location.hash)) {
+      lockNow();
+      requestAnimationFrame(() => document.querySelector(location.hash).scrollIntoView({ behavior: "instant" }));
+    } else {
+      scrollTo({ top: 0, behavior: "instant" });
+    }
   }
 
-  /* Carousel: mouse drag and wheel */
+  /* Carousel: endless, drifts on its own, can be dragged */
 
   const track = document.querySelector(".carousel");
   let dragged = false;
@@ -155,7 +237,7 @@
     track.append(...clone());
 
     let lap = 0, pos = 0, hover = false, down = false, visible = true, resumeAt = 0;
-    let startX = 0, startPos = 0, wheelRun = 0;
+    let startX = 0, startPos = 0;
 
     function measure() {
       lap = originals[0].offsetLeft - track.children[0].offsetLeft;
@@ -175,13 +257,14 @@
 
     function pause(ms) { resumeAt = performance.now() + ms; }
 
-    // Slow drift, paused while the mouse is over it or the user moves it
-    let last = performance.now();
+    // Slow drift; slower still while the mouse is over it, paused while dragged
+    let last = performance.now(), speed = 34;
     function drift(now) {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      if (!reduced && visible && !hover && !down && !busy && now > resumeAt && lap) {
-        pos += 34 * dt;
+      speed += ((hover ? 10 : 34) - speed) * Math.min(1, dt * 3);
+      if (!reduced && visible && !down && !busy && now > resumeAt && lap) {
+        pos += speed * dt;
         apply();
       }
       requestAnimationFrame(drift);
@@ -197,7 +280,7 @@
     }, { passive: true });
 
     track.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") hover = true; });
-    track.addEventListener("pointerleave", () => { hover = false; wheelRun = 0; });
+    track.addEventListener("pointerleave", () => { hover = false; });
 
     track.addEventListener("pointerdown", (e) => {
       if (e.pointerType !== "mouse") return;
@@ -229,18 +312,6 @@
 
     track.addEventListener("dragstart", (e) => e.preventDefault());
 
-    // The wheel turns the carousel; after one full lap the page scrolls on
-    track.addEventListener("wheel", (e) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      const d = e.deltaY * (e.deltaMode === 1 ? 32 : 1);
-      if (wheelRun > lap) return;
-      e.preventDefault();
-      wheelRun += Math.abs(d);
-      pos += d;
-      apply();
-      pause(1500);
-    }, { passive: false });
-
     new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(track);
     addEventListener("resize", measure);
     addEventListener("load", measure);
@@ -248,88 +319,50 @@
     requestAnimationFrame(drift);
   }
 
-  /* Project gallery: one row that scrolls sideways, click to enlarge */
+  /* Project images: one at a time, arrows on the sides, counter below */
 
-  const strip = document.querySelector(".strip-track");
-  if (strip) {
-    const figs = [...strip.querySelectorAll("figure")];
-    const count = document.querySelector(".strip-ui .count");
-    const total = String(figs.length).padStart(2, "0");
-    let down = false, moved = false, startX = 0, startLeft = 0;
+  const stage = document.querySelector(".viewer-stage");
+  if (stage) {
+    const figs = [...stage.querySelectorAll("figure")];
+    const count = document.querySelector(".viewer-ui .count");
+    const note = document.querySelector(".viewer-ui .note");
+    const pad = (n) => String(n).padStart(2, "0");
+    let cur = 0;
 
-    // The image whose left edge is nearest the page margin is the current one
-    function current() {
-      const edge = strip.getBoundingClientRect().left + parseFloat(getComputedStyle(strip).paddingLeft);
-      let best = 0, dist = Infinity;
-      figs.forEach((f, i) => {
-        const d = Math.abs(f.getBoundingClientRect().left - edge);
-        if (d < dist) { dist = d; best = i; }
-      });
-      return best;
-    }
-
-    let countTick = false;
-    strip.addEventListener("scroll", () => {
-      if (countTick) return;
-      countTick = true;
-      requestAnimationFrame(() => {
-        countTick = false;
-        const last = strip.scrollLeft >= strip.scrollWidth - strip.clientWidth - 2;
-        const n = last ? figs.length : current() + 1;
-        count.textContent = String(n).padStart(2, "0") + " / " + total;
-      });
-    }, { passive: true });
-
-    function go(step) {
-      const i = clamp(current() + step, 0, figs.length - 1);
-      const pad = parseFloat(getComputedStyle(strip).paddingLeft);
-      strip.scrollTo({ left: figs[i].offsetLeft - pad, behavior: reduced ? "auto" : "smooth" });
-    }
-
-    document.querySelector(".strip-ui .back")?.addEventListener("click", () => go(-1));
-    document.querySelector(".strip-ui .fwd")?.addEventListener("click", () => go(1));
-
-    strip.addEventListener("pointerdown", (e) => {
-      if (e.pointerType !== "mouse") return;
-      down = true;
-      moved = false;
-      startX = e.clientX;
-      startLeft = strip.scrollLeft;
-    });
-
-    addEventListener("pointermove", (e) => {
-      if (!down) return;
-      const dx = e.clientX - startX;
-      if (Math.abs(dx) > 5 && !moved) {
-        moved = true;
-        strip.classList.add("dragging");
+    // Images load only when they are about to be seen
+    function load(i) {
+      const img = figs[(i + figs.length) % figs.length].querySelector("img");
+      if (img.dataset.src) {
+        img.src = img.dataset.src;
+        delete img.dataset.src;
       }
-      if (moved) strip.scrollLeft = startLeft - dx;
+    }
+
+    function show(i) {
+      figs[cur].classList.remove("on");
+      cur = (i + figs.length) % figs.length;
+      load(cur);
+      figs[cur].classList.add("on");
+      load(cur + 1);
+      load(cur - 1);
+      count.textContent = pad(cur + 1) + " / " + pad(figs.length);
+      if (note) note.textContent = figs[cur].dataset.group || "";
+    }
+
+    document.querySelector(".viewer .back")?.addEventListener("click", () => show(cur - 1));
+    document.querySelector(".viewer .fwd")?.addEventListener("click", () => show(cur + 1));
+
+    // Swipe on touch screens
+    let sx = null;
+    stage.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") sx = e.clientX; });
+    stage.addEventListener("pointerup", (e) => {
+      if (sx === null) return;
+      const dx = e.clientX - sx;
+      sx = null;
+      if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1));
     });
 
-    addEventListener("pointerup", () => {
-      down = false;
-      strip.classList.remove("dragging");
-    });
-
-    strip.addEventListener("dragstart", (e) => e.preventDefault());
-
-    // The wheel moves the row; at either end the page scrolls on
-    strip.addEventListener("wheel", (e) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      const max = strip.scrollWidth - strip.clientWidth;
-      if ((strip.scrollLeft <= 0 && e.deltaY < 0) || (strip.scrollLeft >= max - 1 && e.deltaY > 0)) return;
-      e.preventDefault();
-      strip.scrollLeft += e.deltaY * (e.deltaMode === 1 ? 32 : 1);
-    }, { passive: false });
-
-    addEventListener("keydown", (e) => {
-      if (box.classList.contains("on")) return;
-      if (e.key === "ArrowRight") go(1);
-      if (e.key === "ArrowLeft") go(-1);
-    });
-
-    // Lightbox
+    // Lightbox: the current image full screen
     const box = document.createElement("div");
     box.className = "lightbox";
     box.setAttribute("role", "dialog");
@@ -342,33 +375,29 @@
       `<button class="next-img" type="button" aria-label="Next">${svg("M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5", "arrow h")}</button>`;
     body.appendChild(box);
     const big = box.querySelector("img");
-    let open = -1;
 
-    function show(i) {
-      open = (i + figs.length) % figs.length;
-      const img = figs[open].querySelector("img");
+    function sync() {
+      const img = figs[cur].querySelector("img");
       big.src = img.src;
       big.alt = img.alt;
-      box.classList.add("on");
     }
 
-    function hide() {
-      box.classList.remove("on");
-      strip.scrollTo({ left: figs[open].offsetLeft - parseFloat(getComputedStyle(strip).paddingLeft) });
-      open = -1;
-    }
+    function open() { sync(); box.classList.add("on"); }
+    function close() { box.classList.remove("on"); }
 
-    figs.forEach((f, i) => f.addEventListener("click", () => { if (!moved) show(i); }));
-    box.querySelector(".close").addEventListener("click", hide);
-    box.querySelector(".prev").addEventListener("click", (e) => { e.stopPropagation(); show(open - 1); });
-    box.querySelector(".next-img").addEventListener("click", (e) => { e.stopPropagation(); show(open + 1); });
-    box.addEventListener("click", (e) => { if (e.target === box) hide(); });
+    figs.forEach((f) => f.addEventListener("click", open));
+    box.querySelector(".close").addEventListener("click", close);
+    box.querySelector(".prev").addEventListener("click", (e) => { e.stopPropagation(); show(cur - 1); sync(); });
+    box.querySelector(".next-img").addEventListener("click", (e) => { e.stopPropagation(); show(cur + 1); sync(); });
+    box.addEventListener("click", (e) => { if (e.target === box) close(); });
+
     addEventListener("keydown", (e) => {
-      if (open < 0) return;
-      if (e.key === "Escape") hide();
-      if (e.key === "ArrowRight") show(open + 1);
-      if (e.key === "ArrowLeft") show(open - 1);
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowRight") { show(cur + 1); if (box.classList.contains("on")) sync(); }
+      if (e.key === "ArrowLeft") { show(cur - 1); if (box.classList.contains("on")) sync(); }
     });
+
+    show(0);
   }
 
   /* Black dot cursor */

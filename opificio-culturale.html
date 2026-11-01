@@ -16,6 +16,11 @@
   <div class="fade fade-top" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
   <p class="monogram"><a href="index.html" aria-label="Riccardo Brollo Architetto"><span>R</span><span>B</span><span>A</span></a></p>
   <a class="mark" href="index.html" aria-label="Riccardo Brollo Architetto"><img src="img/spirale.png" alt=""></a>
+  <nav class="bar" aria-label="Menu">
+    <a class="contacts-link" href="index.html#contacts">contacts<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="works-link" href="works.html" aria-current="page">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+    <a class="research-link" href="research.html">research<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
+  </nav>
   <main>
     <section class="head grid">
       <h1>Opificio culturale</h1>
@@ -29,25 +34,19 @@
       </div>
     </section>
 
-    <section class="strip" aria-label="Images">
-      <div class="strip-track">
-        <figure style="--ar: 1152 / 1536"><img src="img/opificio-culturale/01.jpg" width="1152" height="1536" alt="Opificio culturale" loading="eager" decoding="async"></figure>
+    <section class="viewer" aria-label="Images">
+      <div class="viewer-stage">
+        <figure class="on"><img src="img/opificio-culturale/01.jpg" width="1152" height="1536" alt="Opificio culturale" decoding="async"></figure>
+        <button type="button" class="back" aria-label="Previous"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12 H3 M11.5 3.5 L3 12 L11.5 20.5"/></svg></button>
+        <button type="button" class="fwd" aria-label="Next"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5"/></svg></button>
       </div>
-      <div class="strip-ui grid">
+      <div class="viewer-ui grid">
         <span class="count">01 / 01</span>
-        <span class="hint">Drag, scroll or click to enlarge</span>
-        <span class="arrows"><button type="button" class="back" aria-label="Previous"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12 H3 M11.5 3.5 L3 12 L11.5 20.5"/></svg></button><button type="button" class="fwd" aria-label="Next"><svg class="arrow h" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5"/></svg></button></span>
+        <span class="note label muted"></span>
       </div>
     </section>
 
     <a class="next" href="casa-foglia.html"><span class="label muted">Next project</span><strong>Casa Foglia →</strong></a>
   </main>
-
-  <div class="fade fade-bottom" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
-  <nav class="bar" aria-label="Menu">
-    <a class="contacts-link" href="index.html#contacts">contacts<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
-    <a class="works-link" href="works.html" aria-current="page">works<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
-    <a class="research-link" href="research.html">research<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L21 3 M8 3 H21 V16"/></svg></a>
-  </nav>
 </body>
 </html>

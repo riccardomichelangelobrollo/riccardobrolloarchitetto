@@ -413,14 +413,55 @@ h3::first-letter,
   .head .facts { order: 2; }
 }
 
-/* List pages: the same cards on the grid */
+/* List pages: the projects as cards, three to a row, captions centred */
 
+/* The page name is for search engines and screen readers; the bar
+   says it on the page */
+.hidden-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Three cards to a row between the page margins, with more air than the
+   rest of the grid: two columns between them, across and down alike.
+   Two to a row on tablets and phones */
 .list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--s5);
   row-gap: var(--s5);
+  padding-top: var(--c);
   padding-bottom: var(--s6);
 }
 
-.list .card { grid-column: span 2; }
+@media (max-width: 1024px) { .list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .list { column-gap: var(--s3); row-gap: var(--s6); } }
+
+/* Every picture weighs the same: a horizontal one (4:3) fills its column,
+   a vertical one (3:4) is three quarters as wide, so both cover the same
+   area. The pictures sit in the middle of their row, so pictures of the
+   same shape line up; each caption hangs below its picture, in the space
+   between rows, and never moves it */
+.list { align-items: center; }
+.list .card { position: relative; text-align: center; }
+.list .cap { position: absolute; top: 100%; left: 0; right: 0; }
+
+/* With a mouse the pictures stand alone: the caption shows, in black, only
+   under the pointer, and the picture itself stays still. On touch screens
+   the caption stays */
+@media (hover: hover) {
+  .list .cap { opacity: 0; transition: opacity .3s ease; }
+  .list .card:hover .cap { opacity: 1; }
+  .list .card:hover h3,
+  .list .card:hover .cap p { color: var(--ink); }
+  .list .card:hover img { filter: none; transform: none; }
+}
+.list .frame { aspect-ratio: 4 / 3; }
+.list .frame.tall { width: 75%; margin: 0 auto; aspect-ratio: 3 / 4; }
+
 
 /* Project images: a row that slides; the image in the middle is sharp,
    the ones beside it are blurred and run off the edges of the page */

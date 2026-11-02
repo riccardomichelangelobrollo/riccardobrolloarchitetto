@@ -19,6 +19,11 @@
     return document.querySelector(".bar")?.offsetHeight || 80;
   }
 
+  // Scroll distance at which the bar reaches the top: the height of the landing
+  function landed() {
+    return Math.max(1, document.querySelector(".intro")?.offsetHeight || innerHeight - barHeight());
+  }
+
   // Height of the blurred band behind the bar at the top
   function setTopBand() {
     root.style.setProperty("--top-h", barHeight() + 40 + "px");
@@ -150,7 +155,7 @@
 
     function update(force) {
       // Finished when the bar reaches the top of the screen
-      const t = clamp(scrollY / Math.max(1, innerHeight - barHeight()), 0, 1);
+      const t = clamp(scrollY / landed(), 0, 1);
       if (t === lastT && !force) return;
       lastT = t;
       // Three overlapping phases, each moving one way only:
@@ -204,6 +209,92 @@
       e.preventDefault();
       scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
     });
+
+    // Magnet: the landing never rests half way. The first touch of the wheel,
+    // trackpad or finger inside the transition carries the page all the way,
+    // down to the bar at the top or back up to R B A, at once and in one move.
+    // The rest of that same gesture is held back, so it cannot fight the move
+    // or run on into the page.
+    let gliding = false, quietAt = 0, lastWheel = 0, lastDelta = 0;
+    // Starts at once and settles softly. A gentle curve: a steeper one would
+    // spend its last frames moving less than a pixel, which shows as a stutter
+    const ease = (x) => 1 - (1 - x) * (1 - x);
+
+    function glide(to) {
+      if (gliding) return;
+      const from = scrollY;
+      if (Math.abs(to - from) < 1) return;
+      if (reduced) { scrollTo({ top: to, behavior: "instant" }); return; }
+      gliding = true;
+      const start = performance.now(), ms = 700;
+      (function step(now) {
+        const k = Math.min(1, (now - start) / ms);
+        scrollTo({ top: Math.round(from + (to - from) * ease(k)), behavior: "instant" });
+        // R B A follows in the same frame, never one behind the page
+        update();
+        if (k < 1) requestAnimationFrame(step);
+        else { gliding = false; quietAt = performance.now(); }
+      })(start);
+    }
+
+    // Where a gesture should carry the page, or null if it is not the magnet's
+    function aim(dy) {
+      const y = scrollY, end = landed();
+      if (dy > 0 && y < end - 1) return end;
+      if (dy < 0 && y > 0 && y <= end + 1) return 0;
+      return null;
+    }
+
+    addEventListener("wheel", (e) => {
+      const now = performance.now();
+      // Events that keep coming from the same gesture (trackpad momentum)
+      const sameGesture = now - lastWheel < 180;
+      lastWheel = now;
+      if (gliding) { e.preventDefault(); lastDelta = e.deltaY; return; }
+      // The tail of the gesture that just finished the move (trackpad momentum,
+      // ever weaker) dies out; a new push, stronger than the last event,
+      // goes through straight away
+      const fading = Math.abs(e.deltaY) <= Math.abs(lastDelta) + 1;
+      lastDelta = e.deltaY;
+      if (sameGesture && fading && quietAt && now - quietAt < 1500 && aim(e.deltaY) === null && scrollY >= landed() - 1) {
+        e.preventDefault();
+        return;
+      }
+      quietAt = 0;
+      const to = aim(e.deltaY);
+      if (to === null || Math.abs(e.deltaY) < 1) return;
+      e.preventDefault();
+      glide(to);
+    }, { passive: false });
+
+    // Touch: a swipe inside the transition becomes one move
+    let ty = null;
+    addEventListener("touchstart", (e) => { ty = e.touches[0].clientY; }, { passive: true });
+    addEventListener("touchmove", (e) => {
+      if (ty === null) return;
+      if (gliding) { e.preventDefault(); return; }
+      const dy = ty - e.touches[0].clientY;
+      if (Math.abs(dy) < 8) return;
+      const to = aim(dy);
+      if (to === null) { ty = null; return; }
+      e.preventDefault();
+      ty = null;
+      glide(to);
+    }, { passive: false });
+    addEventListener("touchend", () => { ty = null; }, { passive: true });
+
+    // Anything else (keys, the scrollbar) that leaves the page half way
+    let rest = 0, lastY = scrollY, dir = 1;
+    addEventListener("scroll", () => {
+      if (gliding) return;
+      if (scrollY !== lastY) dir = Math.sign(scrollY - lastY);
+      lastY = scrollY;
+      clearTimeout(rest);
+      rest = setTimeout(() => {
+        const y = scrollY, end = landed();
+        if (!gliding && y > 0 && y < end - 1) glide(dir < 0 ? 0 : end);
+      }, 120);
+    }, { passive: true });
   }
 
   /* Carousel: endless, drifts on its own, can be dragged.

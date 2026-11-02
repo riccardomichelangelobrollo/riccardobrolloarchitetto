@@ -1,0 +1,801 @@
+/* Riccardo Brollo Architetto — design rules
+
+   One grid sets everything.
+
+   1. Grid     The page is cut into equal columns: 12 for the content
+               (8 on tablets) plus one more on each side that is the margin.
+               The gutter is a quarter of a column. Nothing else defines a
+               width: margins, gaps and blocks are counted in columns.
+   2. Module   The bar is as tall as a column is wide, so the top corners
+               are squares: the spiral sits in the left one, the language
+               switch in the right one, the image arrows in the margin
+               columns. Vertical space is counted in gutters and columns too.
+   3. Axes     Text starts on content column 1 or 7. A block on axis 1
+               stops at column 5, so one empty column always separates the
+               two halves. Anything aligned right ends on column 12.
+   4. Bar      The three buttons are equally spaced across the content
+               columns; on the home page the bar starts at the bottom of the
+               first screen, scrolls up and stops at the top, while R B A
+               winds into the spiral in the corner square.
+   5. Type     Seven sizes. Jost for the brand (R B A), the buttons and the
+               titles (regular, lower case, capital first letter; never
+               larger than a heading needs); Times New Roman for text
+               (regular) and labels (bold).
+   6. Parts    Cards: three columns in the carousel, two in the lists, 4:5.
+               Facts: label above value, a hairline on top.
+   7. Foot     Contacts on the two axes, then the legal line.
+
+   Phones keep a plain 16px margin and 4 columns.
+   Press G on any page to show the grid, margins included. */
+
+:root {
+  --bg: #ffffff;
+  --ink: #111111;
+  --muted: #8a8a8a;
+  --line: #e2e2e2;
+  /* The one colour of the site: the dot, and whatever the pointer is on */
+  --accent: #ff4f00;
+  --veil: rgba(255, 255, 255, .6);
+
+  /* 1. Grid: content columns + 2 margin columns, gutter = column / 4 */
+  --cols: 12;
+  --page: 100vw; /* set by script.js without the scrollbar */
+  --c: calc(var(--page) / (var(--cols) + 2 + (var(--cols) + 1) / 4));
+  --g: calc(var(--c) / 4);
+  --col: var(--c);
+  --gap: var(--g);
+  --inset: calc(var(--c) + var(--g));     /* margin column + its gutter */
+  --margin: var(--inset);
+
+  /* 2. Module: the bar is one column tall */
+  --bar: var(--c);
+  --radius: 0;
+
+  /* Vertical space: half gutter, gutter, two gutters, one, two, three columns */
+  --s1: calc(var(--g) / 2);
+  --s2: var(--g);
+  --s3: calc(var(--g) * 2);
+  --s4: var(--c);
+  --s5: calc(var(--c) * 2);
+  --s6: calc(var(--c) * 3);
+
+  /* 5. Type */
+  --text: "Times New Roman", Times, serif;
+  --brand: "Jost", "Futura", "Century Gothic", sans-serif;
+  --fs-1: 13px;                         /* labels */
+  --fs-2: 17px;                         /* captions, secondary */
+  --fs-3: 20px;                         /* body, values, card titles */
+  --fs-4: clamp(20px, 1.9vw, 27px);     /* project text */
+  --fs-5: clamp(20px, 3vw, 44px);       /* buttons */
+  --fs-6: clamp(26px, 2.8vw, 40px);     /* section titles */
+  --fs-7: clamp(32px, 4vw, 60px);       /* page titles */
+}
+
+@media (max-width: 1024px) { :root { --cols: 8; } }
+
+/* Phones: a plain margin, 4 columns, a fixed gutter and bar */
+@media (max-width: 640px) {
+  :root {
+    --cols: 4;
+    --inset: 16px;
+    --g: 12px;
+    --c: 48px;
+    --bar: 56px;
+    --col: calc((var(--page) - 2 * var(--inset) - 3 * var(--g)) / 4);
+    --fs-2: 15px; --fs-3: 17px; --fs-5: 17px;
+  }
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: var(--s6); }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--text);
+  font-size: var(--fs-3);
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; height: auto; }
+
+a { color: inherit; text-decoration: none; }
+
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+/* Titles: Jost regular, lower case with a capital first letter */
+h1, h2, h3,
+.next strong {
+  margin: 0;
+  font-family: var(--brand);
+  font-weight: 400;
+  text-transform: lowercase;
+}
+
+.next strong { display: inline-block; }
+
+h1::first-letter,
+h2::first-letter,
+h3::first-letter,
+.next strong::first-letter { text-transform: uppercase; }
+
+.label {
+  margin: 0;
+  font-family: var(--text);
+  font-size: var(--fs-2);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.muted { color: var(--muted); }
+
+/* 1. Grid and the two axes */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--gap);
+  padding: 0 var(--inset);
+}
+
+.axis-1 { grid-column: 1 / span 5; }
+.axis-7 { grid-column: 7 / -1; }
+.span-all { grid-column: 1 / -1; }
+
+@media (max-width: 1024px) {
+  .axis-1 { grid-column: 1 / span 3; }
+  .axis-7 { grid-column: 5 / -1; }
+}
+
+@media (max-width: 640px) {
+  .axis-1,
+  .axis-7 { grid-column: 1 / -1; }
+}
+
+/* Column overlay, toggled with G */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  display: none;
+}
+
+.grid-overlay.on { display: grid; }
+.grid-overlay div { background: rgba(255, 0, 60, .07); }
+
+/* With the margin columns: the same grid, one column more on each side */
+.grid-overlay.with-margins {
+  grid-template-columns: var(--c) repeat(var(--cols), minmax(0, 1fr)) var(--c);
+  padding: 0;
+}
+
+.grid-overlay .m { background: rgba(0, 90, 255, .07); }
+/* The corner squares: one column wide, one bar tall */
+.grid-overlay .m::before { content: ""; display: block; height: var(--bar); background: rgba(0, 90, 255, .12); }
+
+
+/* 5. Facts: label above value, a hairline on top */
+
+.facts { margin: 0; }
+
+.facts > div {
+  padding: var(--s1) 0 var(--s2);
+  border-top: 1px solid var(--line);
+}
+
+.facts dt { margin-bottom: 2px; }
+.facts dd { margin: 0; font-size: var(--fs-3); line-height: 1.35; overflow-wrap: anywhere; }
+.facts a:hover { color: var(--accent); }
+
+/* Progressive blur: sharp at the inner edge, fading into blur at the screen edge */
+
+.fade {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.fade > div { position: absolute; inset: 0; }
+
+.fade-top { top: 0; height: var(--top-h, 120px); opacity: var(--top-o, 0); }
+.fade-top.off { visibility: hidden; }
+
+.fade-top > div { --dir: to top; }
+
+/* Two blurred layers, not more: each one has to be redrawn on every scroll frame */
+.fade > div:nth-child(1) { backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); -webkit-mask-image: linear-gradient(var(--dir), transparent 0%, #000 55%); mask-image: linear-gradient(var(--dir), transparent 0%, #000 55%); }
+.fade > div:nth-child(2) { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); -webkit-mask-image: linear-gradient(var(--dir), transparent 50%, #000 100%); mask-image: linear-gradient(var(--dir), transparent 50%, #000 100%); }
+
+/* A light veil keeps the buttons readable over photos */
+.fade > div:nth-child(3) { background: linear-gradient(var(--dir), transparent, var(--veil)); }
+
+/* Home: the first screen shows only R B A and the bar; the carousel follows */
+
+.intro { height: calc(100vh - var(--bar)); height: calc(100svh - var(--bar)); min-height: 280px; }
+
+.works { padding: var(--s6) 0; }
+
+.monogram {
+  position: fixed;
+  top: var(--s3);
+  left: var(--inset);
+  z-index: 20;
+  width: calc(100% - 2 * var(--inset));
+  margin: 0;
+  font-family: var(--brand);
+  font-size: min(44vw, calc((100svh - var(--bar)) * .95));
+  font-weight: 400;
+  line-height: .78;
+}
+
+.monogram a { display: flex; justify-content: space-between; }
+.monogram span:first-child { margin-left: -.06em; }
+.monogram span:last-child { margin-right: -.04em; }
+
+/* The letters move and shrink with transforms only, from their top left corner */
+.monogram span { transform-origin: 0 0; will-change: transform; }
+
+/* Inner pages have no landing */
+.is-small .monogram { display: none; }
+.is-small .fade-top { --top-o: 1; }
+
+/* Bar: in the page flow, it scrolls up and sticks to the top */
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--bar);
+  padding: 0 var(--inset);
+  font-family: var(--brand);
+  font-size: var(--fs-5);
+  font-weight: 600;
+  line-height: 1;
+}
+
+
+.bar a { display: inline-flex; align-items: center; transition: opacity .2s; }
+
+/* The spiral lives in the corner square: the left margin column, one
+   column tall. It never pushes the buttons; --sb fades it in as R B A
+   winds up on the home page. */
+.bar .home-link {
+  position: absolute;
+  top: 50%;
+  left: calc((var(--c) - var(--mark, 40px)) / 2);
+  transform: translateY(-50%);
+}
+
+.bar .home-link img {
+  width: var(--mark, 40px);
+  height: var(--mark, 40px);
+  max-width: none;
+  opacity: var(--sb, 1);
+  transform: rotate(calc((1 - var(--sb, 1)) * -300deg)) scale(calc(.3 + var(--sb, 1) * .7));
+}
+
+.bar .home-link:hover { opacity: 1; }
+.bar .home-link:hover img { transform: rotate(-360deg); transition: transform .9s cubic-bezier(.2, .7, .2, 1); }
+
+.bar .home-link:not(:hover) img { transition: none; }
+.bar a[aria-current="page"] { opacity: .45; }
+.bar a:hover { opacity: 1; color: var(--accent); }
+
+@media (max-width: 640px) {
+  .bar { padding-left: calc(var(--inset) + var(--mark, 40px) + var(--g)); }
+  .bar .home-link { left: var(--inset); }
+}
+
+/* Inner pages: content starts one column below the bar */
+.is-small .head { padding-top: var(--c); }
+
+.arrow {
+  width: .7em;
+  height: .7em;
+  margin-left: .14em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: square;
+}
+
+/* The same arrow laid flat, for moving between images */
+.arrow.h { width: .9em; height: .9em; margin: 0; }
+
+/* A cross drawn with a thin line */
+.cross {
+  width: .8em;
+  height: .8em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25px;
+  vector-effect: non-scaling-stroke;
+}
+
+.cross path { vector-effect: non-scaling-stroke; }
+
+/* 5. Card: two columns wide, image 4:5 */
+
+.card { display: block; }
+
+.card .frame {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--line);
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .8s cubic-bezier(.2, .7, .2, 1), filter .4s ease;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+@media (hover: hover) {
+  .card:hover img { transform: scale(1.03); filter: blur(10px); }
+}
+
+.card h3 {
+  margin-top: var(--s1);
+  font-size: var(--fs-3);
+  line-height: 1.2;
+}
+
+.card p {
+  margin: 0;
+  font-size: var(--fs-2);
+  line-height: 1.3;
+  color: var(--muted);
+}
+
+.card .where { color: var(--ink); }
+.card { transition: color .2s; }
+.card:hover h3 { color: var(--accent); }
+
+/* Carousel: endless, every card three columns wide */
+
+.carousel {
+  overflow: hidden;
+  padding: 0 var(--inset);
+  cursor: grab;
+  /* Sideways is the carousel's, up and down stays the page's */
+  touch-action: pan-y;
+  user-select: none;
+}
+
+/* The row slides with a transform, on its own layer */
+.carousel-row {
+  display: flex;
+  gap: var(--gap);
+  will-change: transform;
+}
+.carousel.dragging { cursor: grabbing; }
+.carousel.dragging a { pointer-events: none; }
+
+.carousel .card { flex: 0 0 calc(3 * var(--col) + 2 * var(--gap)); }
+
+/* Page head: title across, then the two axes */
+
+.head {
+  row-gap: var(--s4);
+  padding-top: var(--s6);
+  padding-bottom: var(--s5);
+  align-items: start;
+}
+
+.head h1 {
+  grid-column: 1 / -1;
+  font-size: var(--fs-7);
+  line-height: .95;
+}
+
+.head .text p {
+  margin: 0 0 .6em;
+  font-size: var(--fs-4);
+  line-height: 1.35;
+}
+
+@media (max-width: 640px) {
+  .head .facts { order: 2; }
+}
+
+/* List pages: the same cards on the grid */
+
+.list {
+  row-gap: var(--s5);
+  padding-bottom: var(--s6);
+}
+
+.list .card { grid-column: span 2; }
+
+/* Project images: a row that slides; the image in the middle is sharp,
+   the ones beside it are blurred and run off the edges of the page */
+
+.viewer { padding-bottom: var(--s5); }
+
+.viewer-stage {
+  position: relative;
+  height: clamp(300px, 62vh, 700px);
+  overflow: hidden;
+}
+
+.viewer-track {
+  display: flex;
+  align-items: center;
+  /* The photos touch: one continuous strip */
+  gap: 0;
+  height: 100%;
+  transition: transform .7s cubic-bezier(.65, 0, .35, 1);
+  will-change: transform;
+}
+
+.viewer-track figure {
+  flex: 0 0 auto;
+  height: 100%;
+  margin: 0;
+  filter: blur(10px);
+  opacity: .5;
+  cursor: pointer;
+  transition: filter .7s ease, opacity .7s ease;
+}
+
+.viewer-track figure.on { filter: none; opacity: 1; cursor: zoom-in; }
+
+.viewer-track img {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: none;
+  background: var(--line);
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* Drawings sit on white, outlined by a hairline */
+.viewer-track figure[data-group] img { background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); }
+
+.viewer-stage button {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: inline-flex;
+  padding: var(--s1);
+  font-family: var(--brand);
+  font-size: var(--fs-5);
+  line-height: 0;
+  transform: translateY(-50%);
+  transition: opacity .2s;
+}
+
+.viewer-stage button:hover { color: var(--accent); }
+
+/* With a mouse the pointer itself is the arrow, so the margin arrows go */
+.viewer-stage.halves .back,
+.viewer-stage.halves .fwd { display: none; }
+.viewer-stage.halves figure { cursor: none; }
+
+.viewer-pointer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1003;
+  display: none;
+  margin: -.45em 0 0 -.45em;
+  font-size: var(--fs-5);
+  line-height: 0;
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.on-viewer .viewer-pointer { display: block; }
+.on-viewer .dot { visibility: hidden; }
+.viewer-stage .back,
+.viewer-stage .fwd { width: var(--c); justify-content: center; }
+.viewer-stage .back { left: 0; }
+.viewer-stage .fwd { right: 0; }
+
+.viewer-ui {
+  align-items: baseline;
+  margin-top: var(--s3);
+  font-size: var(--fs-2);
+}
+
+.viewer-ui .count { grid-column: 1 / span 5; font-variant-numeric: tabular-nums; }
+.viewer-ui .note { grid-column: 7 / -1; }
+
+@media (max-width: 1024px) {
+  .viewer-ui .count { grid-column: 1 / span 3; }
+  .viewer-ui .note { grid-column: 5 / -1; }
+}
+
+@media (max-width: 640px) {
+  .viewer-stage { height: 52vh; }
+  .viewer-ui .count { grid-column: 1 / span 2; }
+  .viewer-ui .note { grid-column: 3 / -1; }
+}
+
+/* Full-screen view of one image: the page stays behind it, blurred */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1002;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s4) var(--margin);
+  background: rgba(255, 255, 255, .45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.lightbox.on { display: flex; }
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .35);
+}
+
+.lightbox button {
+  position: absolute;
+  padding: var(--s1);
+  font-family: var(--brand);
+  font-size: var(--fs-5);
+  font-weight: 600;
+  line-height: 0;
+}
+
+.lightbox button:hover { color: var(--accent); }
+
+.lightbox .close,
+.lightbox .prev,
+.lightbox .next-img { width: var(--c); display: inline-flex; justify-content: center; }
+.lightbox .close { top: 0; right: 0; height: var(--bar); align-items: center; }
+.lightbox .prev { left: 0; top: 50%; transform: translateY(-50%); }
+.lightbox .next-img { right: 0; top: 50%; transform: translateY(-50%); }
+
+/* Next project */
+
+.next {
+  display: block;
+  margin: 0 var(--inset);
+  padding: var(--s3) 0 var(--s6);
+  border-top: 1px solid var(--line);
+}
+
+.next span { display: block; margin-bottom: var(--s1); }
+
+.next strong {
+  font-size: var(--fs-6);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.next:hover strong { color: var(--accent); }
+
+/* About: running text on axis 1, a table on axis 7, inside the frame */
+
+.about {
+  align-items: start;
+  row-gap: var(--s5);
+  padding-top: var(--c);
+  padding-bottom: var(--s6);
+}
+
+.about-text { grid-column: 1 / span 5; }
+
+.about-text p {
+  margin: 0;
+  font-size: var(--fs-4);
+  line-height: 1.35;
+}
+
+/* Paragraphs start on the margin, separated by a line of space */
+.about-text p + p { margin-top: .6em; }
+
+.about-table {
+  grid-column: 7 / -1;
+  display: grid;
+  row-gap: var(--s3);
+  margin: 0;
+}
+
+.about-table > div {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  column-gap: var(--gap);
+  /* Label and value sit on the same baseline */
+  align-items: baseline;
+}
+
+.about-table dt { font-family: var(--text); font-size: var(--fs-2); font-weight: 700; }
+.about-table dd { margin: 0; font-size: var(--fs-4); line-height: 1.35; overflow-wrap: anywhere; }
+
+/* Text and table share one size, as one page of text */
+
+.about a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+.about a:hover { color: var(--accent); }
+
+/* The contacts are already on the page */
+.page-about .foot { display: none; }
+
+@media (max-width: 1024px) {
+  .about-text, .about-table { grid-column: 1 / -1; }
+}
+
+@media (max-width: 640px) {
+  .about-table > div { grid-template-columns: 1fr; row-gap: 2px; }
+}
+
+/* Contacts: the foot of every page, one size, the two columns line by line */
+
+.paper { background: var(--bg); }
+
+.foot {
+  margin: 0 var(--inset);
+  padding: var(--s3) 0 var(--s2);
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-2);
+  line-height: 1.5;
+}
+
+.foot .main,
+.foot .small {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.foot .small { color: var(--muted); }
+.foot .name { font-weight: 700; }
+
+.foot a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .4s ease, color .2s; }
+.foot a:hover { background-size: 100% 1px; color: var(--accent); }
+
+/* Legal line: right under the contacts */
+
+.legal {
+  margin: 0;
+  padding-bottom: var(--s3);
+  font-size: var(--fs-2);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.legal a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .18em; }
+
+/* Language switch: IT / EN */
+
+.lang {
+  display: inline-flex;
+  gap: .35em;
+  margin: 0;
+  font-family: var(--brand);
+  font-size: var(--fs-2);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.lang a[aria-current] { color: var(--ink); }
+.lang a:hover { color: var(--accent); }
+
+.legal .lang { margin-left: var(--s3); }
+
+/* On the landing it sits in the top right corner square, beside the A,
+   and scrolls away with it */
+.lang.on-landing {
+  position: absolute;
+  top: var(--s3);
+  right: 0;
+  z-index: 2;
+  width: var(--c);
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .legal .axis-7 { margin-top: var(--s1); }
+  /* No margin column on phones: the letters leave room for the switch */
+  .lang.on-landing { right: var(--inset); width: auto; }
+  body:not(.is-small) .monogram { width: calc(100% - 2 * var(--inset) - 4rem); font-size: 33vw; }
+}
+
+/* Cookie notice: small, on the margin, gone once closed */
+
+.cookie {
+  position: fixed;
+  left: var(--inset);
+  /* Above the bar, which sits at the bottom of the first screen */
+  bottom: calc(var(--bar) + var(--s2));
+  z-index: 998;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  max-width: min(520px, calc(100% - 2 * var(--inset)));
+  padding: var(--s2) var(--s2) var(--s2) var(--s3);
+  border: 1px solid var(--ink);
+  background: var(--bg);
+  font-size: var(--fs-2);
+  line-height: 1.35;
+}
+
+.cookie p { margin: 0; }
+.cookie a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+
+.cookie button {
+  flex: 0 0 auto;
+  font-family: var(--brand);
+  font-size: var(--fs-3);
+  font-weight: 600;
+  transition: opacity .2s;
+}
+
+.cookie button:hover { color: var(--accent); }
+
+@media (max-width: 640px) {
+  .legal .axis-7 { margin-top: var(--s1); }
+}
+
+/* Cursor: a black dot */
+
+@media (hover: hover) and (pointer: fine) {
+  html.dot-cursor,
+  html.dot-cursor * { cursor: none !important; }
+}
+
+.dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1003;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+  opacity: 0;
+  transition: width .2s, height .2s, margin .2s, opacity .2s;
+}
+
+.dot.on { opacity: 1; }
+.dot.big { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+
+/* While the dot opens the next page it must stay visible */
+.dot.falling { transition: none; }
+
+/* The next project, bursting out of the dot */
+.sheet {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  will-change: transform, clip-path;
+}
+
+.sheet iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .card img { transition: none; }
+}

@@ -15,6 +15,20 @@
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const smooth = (t) => t * t * (3 - 2 * t);
 
+  // Phones and tablets: a finger, no pointer to follow
+  const touch = matchMedia("(hover: none), (pointer: coarse)").matches;
+
+  // On phones the browser bars come and go while scrolling and fire
+  // "resize"; only a real change of width measures the layout again
+  let lastWidth = innerWidth;
+  const widthJobs = [];
+  function onWidth(fn) { widthJobs.push(fn); }
+  addEventListener("resize", () => {
+    if (innerWidth === lastWidth) return;
+    lastWidth = innerWidth;
+    widthJobs.forEach((fn) => fn());
+  });
+
   function barHeight() {
     return document.querySelector(".bar")?.offsetHeight || 80;
   }
@@ -36,8 +50,8 @@
 
   setTopBand();
   setPage();
-  addEventListener("resize", setTopBand);
-  addEventListener("resize", setPage);
+  onWidth(setTopBand);
+  onWidth(setPage);
 
   /* Grid overlay */
 
@@ -52,7 +66,7 @@
     overlay.innerHTML = (margins ? '<div class="m"></div>' : "") + "<div></div>".repeat(n) + (margins ? '<div class="m"></div>' : "");
   }
   drawGrid();
-  addEventListener("resize", drawGrid);
+  onWidth(drawGrid);
   body.appendChild(overlay);
   addEventListener("keydown", (e) => {
     if (e.key.toLowerCase() === "g" && !e.metaKey && !e.ctrlKey && !e.target.closest("input, textarea")) {
@@ -124,7 +138,7 @@
     root.style.setProperty("--mark", Math.min(m, Math.round(c * 0.8)) + "px");
   }
   sizeSlot();
-  addEventListener("resize", sizeSlot);
+  onWidth(sizeSlot);
   document.fonts?.ready.then(sizeSlot);
 
   if (mono && !body.classList.contains("is-small")) {
@@ -203,7 +217,7 @@
 
     measure();
     onScroll(update);
-    addEventListener("resize", measure);
+    onWidth(measure);
 
     slot?.addEventListener("click", (e) => {
       e.preventDefault();
@@ -267,34 +281,38 @@
       glide(to);
     }, { passive: false });
 
-    // Touch: a swipe inside the transition becomes one move
-    let ty = null;
-    addEventListener("touchstart", (e) => { ty = e.touches[0].clientY; }, { passive: true });
-    addEventListener("touchmove", (e) => {
-      if (ty === null) return;
-      if (gliding) { e.preventDefault(); return; }
-      const dy = ty - e.touches[0].clientY;
-      if (Math.abs(dy) < 8) return;
-      const to = aim(dy);
-      if (to === null) { ty = null; return; }
-      e.preventDefault();
-      ty = null;
-      glide(to);
-    }, { passive: false });
-    addEventListener("touchend", () => { ty = null; }, { passive: true });
+    // With a finger the page scrolls as the phone wants it to: the magnet
+    // works with the wheel and the trackpad only
+    if (!touch) {
+      // A computer with a touch screen: a swipe inside the transition becomes one move
+      let ty = null;
+      addEventListener("touchstart", (e) => { ty = e.touches[0].clientY; }, { passive: true });
+      addEventListener("touchmove", (e) => {
+        if (ty === null) return;
+        if (gliding) { e.preventDefault(); return; }
+        const dy = ty - e.touches[0].clientY;
+        if (Math.abs(dy) < 8) return;
+        const to = aim(dy);
+        if (to === null) { ty = null; return; }
+        e.preventDefault();
+        ty = null;
+        glide(to);
+      }, { passive: false });
+      addEventListener("touchend", () => { ty = null; }, { passive: true });
 
-    // Anything else (keys, the scrollbar) that leaves the page half way
-    let rest = 0, lastY = scrollY, dir = 1;
-    addEventListener("scroll", () => {
-      if (gliding) return;
-      if (scrollY !== lastY) dir = Math.sign(scrollY - lastY);
-      lastY = scrollY;
-      clearTimeout(rest);
-      rest = setTimeout(() => {
-        const y = scrollY, end = landed();
-        if (!gliding && y > 0 && y < end - 1) glide(dir < 0 ? 0 : end);
-      }, 120);
-    }, { passive: true });
+      // Anything else (keys, the scrollbar) that leaves the page half way
+      let rest = 0, lastY = scrollY, dir = 1;
+      addEventListener("scroll", () => {
+        if (gliding) return;
+        if (scrollY !== lastY) dir = Math.sign(scrollY - lastY);
+        lastY = scrollY;
+        clearTimeout(rest);
+        rest = setTimeout(() => {
+          const y = scrollY, end = landed();
+          if (!gliding && y > 0 && y < end - 1) glide(dir < 0 ? 0 : end);
+        }, 120);
+      }, { passive: true });
+    }
   }
 
   /* Carousel: endless, drifts on its own, can be dragged.
@@ -422,7 +440,7 @@
     track.addEventListener("dragstart", (e) => e.preventDefault());
 
     new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(track);
-    addEventListener("resize", measure);
+    onWidth(measure);
     addEventListener("load", measure);
     measure();
     requestAnimationFrame(drift);
@@ -464,7 +482,9 @@
       figs[cur].classList.remove("on");
       cur = (i + figs.length) % figs.length;
       figs[cur].classList.add("on");
-      for (let k = -2; k <= 2; k++) load(cur + k);
+      // Fewer images in memory on phones and tablets
+      const near = touch ? 1 : 2;
+      for (let k = -near; k <= near; k++) load(cur + k);
       centre();
       count.textContent = pad(cur + 1) + " / " + pad(figs.length);
       if (note) note.textContent = figs[cur].dataset.group || "";
@@ -540,7 +560,7 @@
       if (e.key === "ArrowLeft") { show(cur - 1); if (box.classList.contains("on")) sync(); }
     });
 
-    addEventListener("resize", centre);
+    onWidth(centre);
     addEventListener("load", centre);
     show(0);
   }
@@ -650,7 +670,8 @@
         dragged = false;
         return;
       }
-      if (reduced || busy || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      // The burst needs a mouse; a finger simply opens the page
+      if (!fine || reduced || busy || e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault();
       const x = e.clientX || innerWidth / 2;
       const y = e.clientY || innerHeight / 2;

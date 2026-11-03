@@ -836,6 +836,21 @@ h3::first-letter,
 
 .sheet iframe { width: 100%; height: 100%; border: 0; display: block; }
 
+/* Phones and tablets: the live blurs are the heaviest thing a phone can
+   be asked to draw while scrolling, and they fill its memory. There the
+   band under the bar is a plain white fade, the images beside the one in
+   the middle are pale instead of blurred, and an open image sits on white */
+@media (hover: none), (pointer: coarse) {
+  .fade > div:nth-child(1),
+  .fade > div:nth-child(2) { display: none; }
+  .fade > div:nth-child(3) { background: linear-gradient(var(--dir), transparent, var(--bg) 70%); }
+
+  .viewer-track figure { filter: none; opacity: .3; transition: opacity .5s ease; }
+  .viewer-track figure.on { opacity: 1; }
+
+  .lightbox { background: rgba(255, 255, 255, .97); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .card img { transition: none; }

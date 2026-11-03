@@ -33,9 +33,22 @@
     return document.querySelector(".bar")?.offsetHeight || 80;
   }
 
+  // Phones, home: the carousel sits in the landing and only the contacts
+  // follow the bar, so the move ends once they are in view (see style.css);
+  // the legal line under them scrolls freely
+  const works = document.querySelector(".works");
+  const foot = document.querySelector(".foot");
+  let shortEnd = 0;
+  function setShort() {
+    shortEnd = 0;
+    if (!works || !foot || getComputedStyle(works).position !== "absolute") return;
+    const first = (document.querySelector(".intro")?.offsetHeight || 0) + barHeight();
+    shortEnd = Math.max(1, Math.round(foot.getBoundingClientRect().bottom + scrollY - first));
+  }
+
   // Scroll distance at which the bar reaches the top: the height of the landing
   function landed() {
-    return Math.max(1, document.querySelector(".intro")?.offsetHeight || innerHeight - barHeight());
+    return shortEnd || Math.max(1, document.querySelector(".intro")?.offsetHeight || innerHeight - barHeight());
   }
 
   // Height of the blurred band behind the bar at the top
@@ -50,8 +63,10 @@
 
   setTopBand();
   setPage();
+  setShort();
   onWidth(setTopBand);
   onWidth(setPage);
+  onWidth(setShort);
 
   /* Grid overlay */
 

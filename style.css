@@ -240,6 +240,28 @@ h3::first-letter,
 
 .works { padding: var(--s6) 0; }
 
+/* Phones: no empty first screen. R B A at the top, the bar at the bottom
+   and the carousel in the middle of the landing. Only the contacts follow
+   the bar, so here the bar never climbs to the top: R B A winds into its
+   spiral where the bar stops. The padding is the room the browser's own
+   bars take and give back while scrolling, so the end is always reachable */
+@media (max-width: 640px) {
+  body:not(.is-small) { position: relative; padding-bottom: calc(100lvh - 100svh); }
+  body:not(.is-small) .fade-top { display: none; }
+  .works {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(var(--s3) + 26vw);
+    height: calc(100svh - var(--bar) - var(--s3) - 26vw);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0;
+  }
+}
+
 .monogram {
   position: fixed;
   top: var(--s3);

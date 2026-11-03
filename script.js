@@ -220,10 +220,13 @@
     measure();
     onScroll(update);
     onWidth(measure);
-    // On a first visit Jost arrives after the page: measure the letters again
-    // once it is there, or they keep the places of the fallback font
-    document.fonts?.ready.then(measure);
-    document.fonts?.addEventListener("loadingdone", measure);
+    // On a first visit Jost arrives after the page. R B A stays hidden until
+    // it is there, then is measured once more and shown, so the letters never
+    // jump from the places of the fallback font. Three seconds at most
+    const ready = () => { measure(); mono.classList.add("ready"); };
+    if (document.fonts) {
+      Promise.race([document.fonts.load("400 1em Jost", "RBA"), new Promise((r) => setTimeout(r, 3000))]).then(ready, ready);
+    } else ready();
 
     slot?.addEventListener("click", (e) => {
       e.preventDefault();

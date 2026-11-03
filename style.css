@@ -260,6 +260,12 @@ h3::first-letter,
 /* The letters move and shrink with transforms only, from their top left corner */
 .monogram span { transform-origin: 0 0; will-change: transform; }
 
+/* R B A shows only once its own font is there (the script says so), and in
+   any case after three seconds */
+.monogram a { transition: opacity .5s ease; }
+.monogram:not(.ready) a { opacity: 0; animation: reveal .5s 3s forwards; }
+@keyframes reveal { to { opacity: 1; } }
+
 /* Inner pages have no landing */
 .is-small .monogram { display: none; }
 .is-small .fade-top { --top-o: 1; }

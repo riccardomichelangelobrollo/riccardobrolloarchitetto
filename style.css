@@ -92,6 +92,21 @@
 
 html { scroll-behavior: smooth; scroll-padding-top: var(--s6); }
 
+/* Phones and tablets, home page: the page snaps to R B A or to the bar, never
+   half way. The second stop is a block from the bar's place to the end of
+   the page, so below it the page scrolls freely */
+html.snap { scroll-snap-type: y mandatory; scroll-padding-top: 0; }
+.snap .intro { scroll-snap-align: start; }
+.snap body { position: relative; }
+.snap-stop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  scroll-snap-align: start;
+  pointer-events: none;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -838,11 +853,13 @@ h3::first-letter,
 .sheet iframe { width: 100%; height: 100%; border: 0; display: block; }
 
 /* Phones and tablets: live blurs are the heaviest thing a phone can be
-   asked to draw while scrolling. Only the band under the bar keeps one,
-   a single layer; an open image sits on white */
+   asked to draw while scrolling. Only the bar keeps one, exactly its own
+   size, with no fading mask; an open image sits on white */
 @media (hover: none), (pointer: coarse) {
-  .fade > div:nth-child(1) { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-  .fade > div:nth-child(2) { display: none; }
+  .fade { display: none; }
+  .bar { background: rgba(255, 255, 255, .55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  /* R B A winds into the spiral over the bar, never blurred by it */
+  .monogram { z-index: 21; }
 
   .lightbox { background: rgba(255, 255, 255, .97); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
@@ -851,8 +868,8 @@ h3::first-letter,
 @media (max-width: 640px) {
   .viewer-track figure { flex: 0 0 100%; filter: none; opacity: 0; transition: opacity .5s ease; }
   .viewer-track figure.on { opacity: 1; }
-  .viewer-track img { width: 100%; object-fit: contain; }
-  .viewer-track figure[data-group] img { box-shadow: none; }
+  .viewer-track img { width: 100%; object-fit: contain; background: none; }
+  .viewer-track figure[data-group] img { background: none; box-shadow: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

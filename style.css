@@ -481,14 +481,16 @@ h3::first-letter,
 .list .frame.tall { width: 75%; margin: 0 auto; aspect-ratio: 3 / 4; }
 
 
-/* Project images: a row that slides; the image in the middle is sharp,
-   the ones beside it are blurred and run off the edges of the page */
+/* Project images: one at a time, almost as tall as the screen;
+   the next one fades in as the row slides */
 
-.viewer { padding-bottom: var(--s5); }
+.viewer { padding-bottom: var(--s4); }
 
 .viewer-stage {
   position: relative;
-  height: clamp(300px, 62vh, 700px);
+  /* Height leads: photo and counter fit the screen under the bar,
+     the counter with the same margin above and below */
+  height: max(300px, calc(100svh - var(--bar) - var(--s3) - 2 * var(--s4) - var(--fs-2)));
   overflow: hidden;
 }
 
@@ -503,29 +505,23 @@ h3::first-letter,
 }
 
 .viewer-track figure {
-  flex: 0 0 auto;
+  flex: 0 0 100%;
   height: 100%;
   margin: 0;
-  filter: blur(10px);
-  opacity: .5;
-  cursor: pointer;
-  transition: filter .7s ease, opacity .7s ease;
+  opacity: 0;
+  transition: opacity .7s ease;
 }
 
-.viewer-track figure.on { filter: none; opacity: 1; cursor: zoom-in; }
+.viewer-track figure.on { opacity: 1; cursor: zoom-in; }
 
 .viewer-track img {
   display: block;
-  width: auto;
+  width: 100%;
   height: 100%;
-  max-width: none;
-  background: var(--line);
+  object-fit: contain;
   -webkit-user-drag: none;
   user-select: none;
 }
-
-/* Drawings sit on white, outlined by a hairline */
-.viewer-track figure[data-group] img { background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); }
 
 .viewer-stage button {
   position: absolute;
@@ -569,22 +565,17 @@ h3::first-letter,
 
 .viewer-ui {
   align-items: baseline;
-  margin-top: var(--s3);
+  margin-top: var(--s4);
   font-size: var(--fs-2);
+  line-height: 1;
 }
 
-.viewer-ui .count { grid-column: 1 / span 5; font-variant-numeric: tabular-nums; }
-.viewer-ui .note { grid-column: 7 / -1; }
-
-@media (max-width: 1024px) {
-  .viewer-ui .count { grid-column: 1 / span 3; }
-  .viewer-ui .note { grid-column: 5 / -1; }
-}
+.viewer-ui .count { grid-column: 1 / -1; grid-row: 1; text-align: center; font-variant-numeric: tabular-nums; }
+/* The name of a group of drawings, on the left of the number */
+.viewer-ui .note { grid-column: 1 / span 3; grid-row: 1; }
 
 @media (max-width: 640px) {
-  .viewer-stage { height: 52vh; }
-  .viewer-ui .count { grid-column: 1 / span 2; }
-  .viewer-ui .note { grid-column: 3 / -1; }
+  .viewer-ui .note { grid-column: 1 / span 1; }
 }
 
 /* Full-screen view of one image: the page stays behind it, blurred */
@@ -870,14 +861,6 @@ h3::first-letter,
   .monogram { z-index: 21; }
 
   .lightbox { background: rgba(255, 255, 255, .97); backdrop-filter: none; -webkit-backdrop-filter: none; }
-}
-
-/* Phones: one photograph at a time, as wide as the page */
-@media (max-width: 640px) {
-  .viewer-track figure { flex: 0 0 100%; filter: none; opacity: 0; transition: opacity .5s ease; }
-  .viewer-track figure.on { opacity: 1; }
-  .viewer-track img { width: 100%; object-fit: contain; background: none; }
-  .viewer-track figure[data-group] img { background: none; box-shadow: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

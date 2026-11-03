@@ -854,29 +854,17 @@ h3::first-letter,
 
 .sheet iframe { width: 100%; height: 100%; border: 0; display: block; }
 
-/* Phones and tablets: live blurs are the heaviest thing a phone can draw
-   while scrolling, and Safari on iPad mishandles a blur that is masked,
-   faded with opacity or nested in another blurred element: it can spread
-   it over the whole screen or hide what lies on it. So the band under the
-   bar is two plain fixed strips, never masked or faded: the bar's own
-   height blurred behind a white veil that thickens downwards, then the
-   same veil, unblurred, thinning out below it: the edge of the blur sits
-   where the veil is thickest, so the band ends softly instead of on a line.
-   The bar itself carries no effect. An open image sits on white */
+/* Phones and tablets: the same soft band as on a computer, with one
+   difference. Safari treats a blur whose parent is see-through (opacity
+   below 1) as a separate picture: the blur shows nothing, or spreads, or
+   hides what lies on it. So here the band is never faded with opacity: it
+   is shown whole, or hidden, and the bar itself carries no effect. Two
+   blurred layers instead of three, lighter for a phone. An open image sits
+   on white */
 @media (hover: none), (pointer: coarse) {
-  .fade-top { height: calc(var(--bar) + var(--s4)); opacity: 1; }
-  .fade > div { bottom: auto; -webkit-mask-image: none; mask-image: none; }
-  .fade > div:nth-child(1) {
-    height: var(--bar);
-    background: linear-gradient(rgba(255, 255, 255, .6), rgba(255, 255, 255, .8));
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
-  }
-  .fade > div:nth-child(2) {
-    top: var(--bar);
-    height: var(--s4);
-    background: linear-gradient(rgba(255, 255, 255, .8), rgba(255, 255, 255, .35) 40%, rgba(255, 255, 255, 0));
-  }
+  .fade-top { opacity: 1; }
+  .fade > div:nth-child(1) { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); -webkit-mask-image: linear-gradient(var(--dir), transparent 0%, #000 60%); mask-image: linear-gradient(var(--dir), transparent 0%, #000 60%); }
+  .fade > div:nth-child(2) { backdrop-filter: none; -webkit-backdrop-filter: none; -webkit-mask-image: none; mask-image: none; background: linear-gradient(var(--dir), transparent, var(--veil)); }
   .fade > div:nth-child(3) { display: none; }
   /* R B A winds into the spiral over the bar, never blurred by it */
   .monogram { z-index: 21; }

@@ -18,6 +18,13 @@
   // Phones and tablets: a finger, no pointer to follow
   const touch = matchMedia("(hover: none), (pointer: coarse)").matches;
 
+  // Phones have their own plain layout (style.css): no landing to wind up,
+  // no drifting carousel. Turning a phone sideways past that width starts
+  // the page again in the other layout
+  const narrow = matchMedia("(max-width: 640px)");
+  const phone = narrow.matches;
+  narrow.addEventListener?.("change", () => location.reload());
+
   // On phones the browser bars come and go while scrolling and fire
   // "resize"; only a real change of width measures the layout again
   let lastWidth = innerWidth;
@@ -141,7 +148,7 @@
   onWidth(sizeSlot);
   document.fonts?.ready.then(sizeSlot);
 
-  if (mono && !body.classList.contains("is-small")) {
+  if (mono && !body.classList.contains("is-small") && !phone) {
     let big = null;
     const letters = [...mono.querySelectorAll("span")];
 
@@ -327,7 +334,7 @@
   const track = document.querySelector(".carousel");
   let dragged = false;
 
-  if (track) {
+  if (track && !phone) {
     // The cards go in a row that slides inside the carousel
     const row = document.createElement("div");
     row.className = "carousel-row";

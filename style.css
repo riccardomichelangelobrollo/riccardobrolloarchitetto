@@ -240,20 +240,6 @@ h3::first-letter,
 
 .works { padding: var(--s6) 0; }
 
-/* Phones: no empty first screen. The landing is only as tall as R B A, the
-   bar follows right under it and the carousel sits in the middle of what is
-   left of the screen. The magnet still carries the bar to the top */
-@media (max-width: 640px) {
-  .intro { height: calc(2 * var(--s3) + 26vw); min-height: 0; }
-  .works {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-sizing: border-box;
-    min-height: calc(100svh - var(--bar) - 2 * var(--s3) - 26vw);
-    padding: var(--s4) 0;
-  }
-}
 
 .monogram {
   position: fixed;
@@ -887,4 +873,86 @@ h3::first-letter,
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .card img { transition: none; }
+}
+
+
+/* Phones: a plain header on every page, R B A on the left and a menu on
+   the right that opens under it. Nothing moves on its own: no landing, no
+   bar winding into the spiral, no blurred band. On the home page the
+   carousel follows the header and scrolls sideways under the finger */
+
+.mhead { display: none; }
+
+@media (max-width: 640px) {
+  .bar, .fade, .monogram, .intro, .lang.on-landing { display: none; }
+
+  .mhead {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    padding: var(--s3) var(--inset) 0;
+    font-family: var(--brand);
+  }
+
+  /* The spiral, then R B A */
+  .mhead-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--g);
+    justify-self: start;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: .18em;
+    line-height: 1;
+  }
+  .mhead-logo img { width: 28px; height: 28px; }
+
+  .mmenu { text-align: right; }
+
+  .mmenu summary {
+    display: inline-block;
+    list-style: none;
+    cursor: pointer;
+    font-size: var(--fs-5);
+    font-weight: 600;
+    line-height: 28px;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .18em;
+  }
+  .mmenu summary::-webkit-details-marker { display: none; }
+  .mmenu .m-close, .mmenu[open] .m-open { display: none; }
+  .mmenu[open] .m-close { display: inline; }
+
+  .mmenu nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--s2);
+    padding: var(--s4) 0 var(--s2);
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .mmenu nav a { display: inline-flex; align-items: center; }
+  .mmenu nav a[aria-current="page"] { opacity: .45; }
+  .mmenu .lang { margin-top: var(--s2); font-size: var(--fs-2); }
+
+  /* Home: the carousel right under the header, a native sideways scroll,
+     each card most of the screen wide so the next one peeks in */
+  .works { padding: var(--s5) 0 var(--s5); }
+  .carousel {
+    display: flex;
+    gap: var(--g);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--inset);
+    touch-action: auto;
+    cursor: auto;
+    scrollbar-width: none;
+  }
+  .carousel::-webkit-scrollbar { display: none; }
+  /* Room after the last card, which a scrolling box leaves out */
+  .carousel::after { content: ""; flex: 0 0 1px; }
+  .carousel .card { flex: 0 0 75%; scroll-snap-align: start; }
 }

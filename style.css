@@ -17,10 +17,12 @@
                columns; on the home page the bar starts at the bottom of the
                first screen, scrolls up and stops at the top, while R B A
                winds into the spiral in the corner square.
-   5. Type     Seven sizes. Jost for the brand (R B A), the buttons and the
+   5. Type     Six sizes. Jost for the brand (R B A), the buttons and the
                titles (regular, lower case, capital first letter; never
                larger than a heading needs); Times New Roman for text
-               (regular) and labels (bold).
+               (regular) and labels (bold). All running text, project
+               descriptions and the about page included, is one size: the
+               size of the project facts (fs-3).
    6. Parts    Cards: three columns in the carousel, two in the lists, 4:5.
                Facts: label above value, a hairline on top.
    7. Foot     Contacts on the two axes, then the legal line.
@@ -64,8 +66,7 @@
   --brand: "Jost", "Futura", "Century Gothic", sans-serif;
   --fs-1: 13px;                         /* labels */
   --fs-2: 17px;                         /* captions, secondary */
-  --fs-3: 20px;                         /* body, values, card titles */
-  --fs-4: clamp(20px, 1.9vw, 27px);     /* project text */
+  --fs-3: 20px;                         /* all running text: values, descriptions, card titles */
   --fs-5: clamp(20px, 3vw, 44px);       /* buttons */
   --fs-6: clamp(26px, 2.8vw, 40px);     /* section titles */
   --fs-7: clamp(32px, 4vw, 60px);       /* page titles */
@@ -422,7 +423,7 @@ h3::first-letter,
 
 .head .text p {
   margin: 0 0 .6em;
-  font-size: var(--fs-4);
+  font-size: var(--fs-3);
   line-height: 1.35;
 }
 
@@ -660,7 +661,7 @@ h3::first-letter,
 
 .about-text p {
   margin: 0;
-  font-size: var(--fs-4);
+  font-size: var(--fs-3);
   line-height: 1.35;
 }
 
@@ -683,7 +684,7 @@ h3::first-letter,
 }
 
 .about-table dt { font-family: var(--text); font-size: var(--fs-2); font-weight: 700; }
-.about-table dd { margin: 0; font-size: var(--fs-4); line-height: 1.35; overflow-wrap: anywhere; }
+.about-table dd { margin: 0; font-size: var(--fs-3); line-height: 1.35; overflow-wrap: anywhere; }
 
 /* Text and table share one size, as one page of text */
 

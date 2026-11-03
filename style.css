@@ -854,41 +854,30 @@ h3::first-letter,
 
 .sheet iframe { width: 100%; height: 100%; border: 0; display: block; }
 
-/* Phones and tablets: live blurs are the heaviest thing a phone can be
-   asked to draw while scrolling, and Safari on iPad spreads a masked one
-   over the whole screen. So the bar keeps a single blur, exactly its own
-   size and with no mask; the soft edge of the desktop comes from steps
-   below it, each a little less blurred and less white, so the blur fades
-   out instead of stopping on a line. An open image sits on white */
+/* Phones and tablets: live blurs are the heaviest thing a phone can draw
+   while scrolling, and Safari on iPad mishandles a blur that is masked,
+   faded with opacity or nested in another blurred element: it can spread
+   it over the whole screen or hide what lies on it. So the band under the
+   bar is two plain fixed strips, never masked or faded: the bar's own
+   height blurred behind a white veil that thickens downwards, then the
+   same veil, unblurred, thinning out below it: the edge of the blur sits
+   where the veil is thickest, so the band ends softly instead of on a line.
+   The bar itself carries no effect. An open image sits on white */
 @media (hover: none), (pointer: coarse) {
-  .fade { display: none; }
-  .bar {
-    background: linear-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, .45));
+  .fade-top { height: calc(var(--bar) + var(--s4)); opacity: 1; }
+  .fade > div { bottom: auto; -webkit-mask-image: none; mask-image: none; }
+  .fade > div:nth-child(1) {
+    height: var(--bar);
+    background: linear-gradient(rgba(255, 255, 255, .6), rgba(255, 255, 255, .8));
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
   }
-  .bar::before,
-  .bar::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    pointer-events: none;
+  .fade > div:nth-child(2) {
+    top: var(--bar);
+    height: var(--s4);
+    background: linear-gradient(rgba(255, 255, 255, .8), rgba(255, 255, 255, .35) 40%, rgba(255, 255, 255, 0));
   }
-  .bar::before {
-    top: 100%;
-    height: var(--s2);
-    background: linear-gradient(rgba(255, 255, 255, .45), rgba(255, 255, 255, .25));
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-  }
-  .bar::after {
-    top: calc(100% + var(--s2));
-    height: var(--s2);
-    background: linear-gradient(rgba(255, 255, 255, .25), rgba(255, 255, 255, 0));
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
-  }
+  .fade > div:nth-child(3) { display: none; }
   /* R B A winds into the spiral over the bar, never blurred by it */
   .monogram { z-index: 21; }
 

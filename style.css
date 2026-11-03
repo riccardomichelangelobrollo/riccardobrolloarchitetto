@@ -855,11 +855,40 @@ h3::first-letter,
 .sheet iframe { width: 100%; height: 100%; border: 0; display: block; }
 
 /* Phones and tablets: live blurs are the heaviest thing a phone can be
-   asked to draw while scrolling. Only the bar keeps one, exactly its own
-   size, with no fading mask; an open image sits on white */
+   asked to draw while scrolling, and Safari on iPad spreads a masked one
+   over the whole screen. So the bar keeps a single blur, exactly its own
+   size and with no mask; the soft edge of the desktop comes from steps
+   below it, each a little less blurred and less white, so the blur fades
+   out instead of stopping on a line. An open image sits on white */
 @media (hover: none), (pointer: coarse) {
   .fade { display: none; }
-  .bar { background: rgba(255, 255, 255, .55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  .bar {
+    background: linear-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, .45));
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+  .bar::before,
+  .bar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+  }
+  .bar::before {
+    top: 100%;
+    height: var(--s2);
+    background: linear-gradient(rgba(255, 255, 255, .45), rgba(255, 255, 255, .25));
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+  .bar::after {
+    top: calc(100% + var(--s2));
+    height: var(--s2);
+    background: linear-gradient(rgba(255, 255, 255, .25), rgba(255, 255, 255, 0));
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
   /* R B A winds into the spiral over the bar, never blurred by it */
   .monogram { z-index: 21; }
 

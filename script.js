@@ -220,6 +220,10 @@
     measure();
     onScroll(update);
     onWidth(measure);
+    // On a first visit Jost arrives after the page: measure the letters again
+    // once it is there, or they keep the places of the fallback font
+    document.fonts?.ready.then(measure);
+    document.fonts?.addEventListener("loadingdone", measure);
 
     slot?.addEventListener("click", (e) => {
       e.preventDefault();

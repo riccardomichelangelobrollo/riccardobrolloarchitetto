@@ -206,6 +206,7 @@ h3::first-letter,
 
 .facts dt { margin-bottom: 2px; }
 .facts dd { margin: 0; font-size: var(--fs-3); line-height: 1.35; overflow-wrap: anywhere; }
+.facts a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
 .facts a:hover { color: var(--accent); }
 
 /* Progressive blur: sharp at the inner edge, fading into blur at the screen edge */

@@ -13,10 +13,13 @@
    3. Axes     Text starts on content column 1 or 7. A block on axis 1
                stops at column 5, so one empty column always separates the
                two halves. Anything aligned right ends on column 12.
-   4. Bar      The three buttons are equally spaced across the content
-               columns; on the home page the bar starts at the bottom of the
-               first screen, scrolls up and stops at the top, while R B A
-               winds into the spiral in the corner square.
+   4. Bar      As a header: the spiral in the left margin column, R B A
+               one gutter from it, the three buttons equally spaced in the
+               right half of the content, IT / EN in the right margin
+               column. On the home page the bar starts at the bottom of the
+               first screen with the buttons spread across the content; it
+               scrolls up and stops at the top, while R B A comes down into
+               the small one and the buttons gather in the right half.
    5. Type     Six sizes. Jost for the brand (R B A), the buttons and the
                titles (regular, lower case, capital first letter; never
                larger than a heading needs); Times New Roman for text
@@ -222,7 +225,9 @@ h3::first-letter,
 
 .fade > div { position: absolute; inset: 0; }
 
-.fade-top { top: 0; height: var(--top-h, 120px); opacity: var(--top-o, 0); }
+/* Never faded with opacity: a blur inside something see-through shows
+   nothing in Safari. It is shown whole, or hidden */
+.fade-top { top: 0; height: var(--top-h, 120px); }
 .fade-top.off { visibility: hidden; }
 
 .fade-top > div { --dir: to top; }
@@ -238,7 +243,9 @@ h3::first-letter,
 
 .intro { height: calc(100vh - var(--bar)); height: calc(100svh - var(--bar)); min-height: 280px; }
 
-.works { padding: var(--s6) 0; }
+/* Room below the carousel as tall as the band behind the bar, so it can
+   scroll up under the bar and be blurred, as on every other page */
+.works { padding: var(--s6) 0 calc(var(--s6) + var(--top-h, 120px)); }
 
 
 .monogram {
@@ -269,9 +276,9 @@ h3::first-letter,
 
 /* Inner pages have no landing */
 .is-small .monogram { display: none; }
-.is-small .fade-top { --top-o: 1; }
 
-/* Bar: in the page flow, it scrolls up and sticks to the top */
+/* Bar: in the page flow, it scrolls up and sticks to the top. R B A at
+   the left, the buttons together at the right */
 
 .bar {
   position: sticky;
@@ -280,6 +287,7 @@ h3::first-letter,
   display: flex;
   justify-content: space-between;
   align-items: center;
+  column-gap: var(--s4);
   height: var(--bar);
   padding: 0 var(--inset);
   font-family: var(--brand);
@@ -291,9 +299,75 @@ h3::first-letter,
 
 .bar a { display: inline-flex; align-items: center; transition: opacity .2s; }
 
+/* The bar as a header: inner pages, and the home page once the script
+   has it (.live). Two halves: R B A in the left one; the right one is cut
+   into three equal parts, one button at the start of each. On 12 columns
+   the parts are two columns each, so the buttons start on columns 7, 9
+   and 11. The buttons are as large as running text, but never more than
+   fits their part ("progetti" with its arrow is 5.2 em wide) */
+.bar .menu { display: contents; }
+
+.is-small .bar,
+.bar.live {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--gap);
+}
+
+.is-small .bar .menu,
+.bar.live .menu {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--gap);
+  font-size: min(var(--fs-3), calc(((var(--page, 100vw) - 2 * var(--inset) - var(--gap)) / 2 - 2 * var(--gap)) / 3 / 5.2));
+}
+.bar .menu a { justify-self: start; }
+
+/* The small R B A, as the phones' header has it, the size of a section
+   title. Same line height as the big one, so the big letters can land
+   exactly on these */
+.bar .logo {
+  justify-self: start;
+  gap: .18em;
+  /* One gutter from the spiral, as in the phones' header: the spiral is
+     centred in the margin column, so this pulls R B A back by half of
+     what the column has left beside it */
+  margin-left: calc((var(--mark, 40px) - var(--c)) / 2);
+  font-size: var(--fs-6);
+  font-weight: 400;
+  line-height: .78;
+}
+
+/* The buttons grow and shrink from their left edge while the home page
+   moves between the landing and the header */
+.bar .menu a { transform-origin: 0 50%; }
+
+/* IT / EN in the right margin column, as the spiral is in the left one */
+.bar .lang {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: var(--c);
+  justify-content: center;
+  font-size: var(--fs-2);
+  transform: translateY(-50%);
+}
+/* Where the margin column gets too narrow for it */
+@media (max-width: 720px) { .bar .lang { font-size: var(--fs-1); } }
+
+/* Home, landing: the buttons spread across the content, R B A and IT / EN
+   not there yet. While the big R B A is on its way the small one waits
+   hidden; IT / EN fades in with the spiral */
+body:not(.is-small) .bar:not(.live) { column-gap: 0; }
+body:not(.is-small) .bar:not(.live) .logo { position: absolute; visibility: hidden; }
+body:not(.is-small) .bar:not(.live) .lang { visibility: hidden; }
+body:not(.is-small) .bar .logo span { visibility: hidden; }
+html.landed body:not(.is-small) .bar .logo span { visibility: visible; }
+body:not(.is-small) .bar .lang { opacity: var(--sb, 1); }
+
 /* The spiral lives in the corner square: the left margin column, one
    column tall. It never pushes the buttons; --sb fades it in as R B A
-   winds up on the home page. */
+   lands on the home page. */
 .bar .home-link {
   position: absolute;
   top: 50%;
@@ -306,7 +380,6 @@ h3::first-letter,
   height: var(--mark, 40px);
   max-width: none;
   opacity: var(--sb, 1);
-  transform: rotate(calc((1 - var(--sb, 1)) * -300deg)) scale(calc(.3 + var(--sb, 1) * .7));
 }
 
 .bar .home-link:hover { opacity: 1; }
@@ -434,8 +507,17 @@ h3::first-letter,
   line-height: 1.35;
 }
 
+/* Phones, project page: from the top the title, the facts, the pictures
+   and, at the end, the text. Title, facts and text become items of the
+   page's column, so the pictures can sit between them */
 @media (max-width: 640px) {
-  .head .facts { order: 2; }
+  .project { display: flex; flex-direction: column; }
+  .project .head { display: contents; }
+  .project .head > * { padding-left: var(--inset); padding-right: var(--inset); }
+  .project .head > h1 { order: 1; margin: 0; padding-top: var(--c); }
+  .project .head > .facts { order: 2; margin: var(--s4) 0; }
+  .project .viewer { order: 3; }
+  .project .head > .text { order: 4; padding-bottom: var(--s5); }
 }
 
 /* List pages: the projects as cards, three to a row, captions centred */
@@ -627,6 +709,60 @@ h3::first-letter,
 .lightbox .prev { left: 0; top: 50%; transform: translateY(-50%); }
 .lightbox .next-img { right: 0; top: 50%; transform: translateY(-50%); }
 
+/* Project page on a wide screen (12 columns): the pictures in the left
+   half, title, facts and text on axis 7. On this side the margin shrinks
+   to one gutter, the same as between two columns, so the pictures can
+   reach from there to the end of column 5: column 6 stays empty, as
+   everywhere, before the text. Each picture keeps its top left corner on
+   that corner of the grid, whatever its shape. The title stands alone one
+   column under the bar; the pictures start on the hairline of the first
+   fact, the line both halves share, and stay there while the text
+   scrolls. The counter hangs one gutter under the bottom left corner of
+   the picture; one more gutter, then the edge of the screen */
+@media (min-width: 1025px) {
+  .project {
+    /* The title's line and the gap under it */
+    --title: calc(var(--fs-7) * .95 + var(--s3));
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    column-gap: var(--gap);
+    align-items: start;
+    padding: var(--c) var(--inset) var(--s5);
+  }
+
+  /* Title, facts and text become rows of the page's grid, so the pictures
+     can start exactly where the facts do */
+  .project .head { display: contents; }
+  .project .head > h1 { grid-column: 7 / -1; grid-row: 1; margin: 0 0 var(--s3); }
+  .project .head > .facts { grid-column: 7 / -1; grid-row: 2; margin-bottom: var(--s3); }
+  .project .head > .text { grid-column: 7 / -1; grid-row: 3; }
+
+  .project .viewer {
+    grid-column: 1 / span 5;
+    grid-row: 2 / span 2;
+    /* Into the margin column, up to one gutter from the edge */
+    margin-left: calc(var(--g) - var(--inset));
+    position: sticky;
+    top: calc(var(--bar) + var(--c) + var(--title));
+    padding: 0;
+  }
+  .project .viewer-stage { height: max(300px, calc(100svh - var(--bar) - var(--c) - var(--title) - 2 * var(--s2) - var(--fs-2))); }
+  .project .viewer-track img { object-position: 0 0; }
+
+  /* The script lifts the counter to the bottom of each picture */
+  .project .viewer-ui {
+    display: block;
+    margin-top: var(--s2);
+    padding: 0;
+    transition: transform .5s ease;
+  }
+
+  /* A finger swipes the pictures and taps one to open it; arrows would
+     lie on the picture itself here */
+  .project .viewer-stage .back,
+  .project .viewer-stage .fwd { display: none; }
+}
+
 /* Next project */
 
 .next {
@@ -753,7 +889,6 @@ h3::first-letter,
 .lang a[aria-current] { color: var(--ink); }
 .lang a:hover { color: var(--accent); }
 
-.legal .lang { margin-left: var(--s3); }
 
 /* On the landing it sits in the top right corner square, beside the A,
    and scrolls away with it */
@@ -884,7 +1019,7 @@ h3::first-letter,
 .mhead { display: none; }
 
 @media (max-width: 640px) {
-  .bar, .fade, .monogram, .intro, .lang.on-landing { display: none; }
+  .bar, .is-small .bar, .bar.live, .fade, .monogram, .intro, .lang.on-landing { display: none; }
 
   .mhead {
     display: grid;
@@ -930,7 +1065,7 @@ h3::first-letter,
     align-items: flex-end;
     gap: var(--s2);
     padding: var(--s4) 0 var(--s2);
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 600;
     line-height: 1;
   }

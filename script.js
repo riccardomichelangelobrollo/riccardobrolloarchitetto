@@ -134,12 +134,12 @@
   const bar = document.querySelector(".bar");
   const slot = document.querySelector(".bar .home-link");
 
-  // Spiral size, and the margin that hides the slot completely on the landing
+  // Spiral size: as large as the small R B A beside it, as in the phones'
+  // header, and never wider than most of a column
   function sizeSlot() {
     if (!bar || !slot) return;
-    const fs = parseFloat(getComputedStyle(bar).fontSize);
-    const m = Math.round(fs * 1.1);
-    // The spiral is as tall as the capitals of the buttons, never wider than a column
+    const fs = parseFloat(getComputedStyle(bar.querySelector(".logo") || bar).fontSize);
+    const m = Math.round(fs);
     // The bar is one column tall, so its height is the column width
     const c = bar.offsetHeight || 80;
     root.style.setProperty("--mark", Math.min(m, Math.round(c * 0.8)) + "px");
@@ -149,26 +149,41 @@
   document.fonts?.ready.then(sizeSlot);
 
   if (mono && !body.classList.contains("is-small") && !phone) {
-    let big = null;
     const letters = [...mono.querySelectorAll("span")];
+    // The small R B A at the left of the bar, where the big one lands, and
+    // the buttons, spread on the landing, together at the right once landed
+    const logo = bar.querySelector(".logo");
+    const small = [...logo.querySelectorAll("span")];
+    const buttons = [...bar.querySelectorAll(".menu a")];
+    const lang = bar.querySelector(".lang");
 
-    // The letters are measured once, at full size; while scrolling they
-    // only move and shrink with transforms, so nothing is laid out again
-    let lay = null, m = 40;
+    // Everything is measured once; while scrolling the letters and the
+    // buttons only move and shrink with transforms, nothing is laid out again
+    let lay = null;
 
     function measure() {
       letters.forEach((l) => { l.style.transform = ""; });
-      const r = mono.getBoundingClientRect();
-      const size = parseFloat(getComputedStyle(mono).fontSize);
-      const cs = letters.map((l) => getComputedStyle(l));
+      buttons.forEach((b) => { b.style.transform = ""; });
+      const at = (el) => el.getBoundingClientRect().left;
+      // The landing: buttons spread across the bar, at their full size
+      bar.classList.remove("live");
+      const spread = buttons.map(at);
+      const big = parseFloat(getComputedStyle(buttons[0]).fontSize);
+      // The header: buttons in the right half, perhaps a little smaller
+      bar.classList.add("live");
+      sizeSlot();
+      const br = bar.getBoundingClientRect();
+      const end = buttons.map(at);
+      const fs = parseFloat(getComputedStyle(buttons[0]).fontSize);
       lay = {
-        size, top: r.top, left: r.left, width: r.width,
-        // Each letter: where it sits, how wide it is, its outer margins
-        boxes: letters.map((l) => { const b = l.getBoundingClientRect(); return { x: b.left, y: b.top - r.top, w: b.width, h: b.height }; }),
-        ml: parseFloat(cs[0].marginLeft),
-        mr: parseFloat(cs[cs.length - 1].marginRight),
+        // Big letters: where they sit on the screen (R B A is fixed)
+        boxes: letters.map((l) => { const b = l.getBoundingClientRect(); return { x: b.left, y: b.top }; }),
+        // Small letters: where they sit in the bar, which travels
+        marks: small.map((l) => { const b = l.getBoundingClientRect(); return { x: b.left - br.left, y: b.top - br.top }; }),
+        k: parseFloat(getComputedStyle(logo).fontSize) / parseFloat(getComputedStyle(mono).fontSize),
+        shift: spread.map((x, i) => x - end[i]),
+        grow: big / fs,
       };
-      m = parseFloat(getComputedStyle(root).getPropertyValue("--mark")) || 40;
       update(true);
     }
 
@@ -179,49 +194,41 @@
       const t = clamp(scrollY / landed(), 0, 1);
       if (t === lastT && !force) return;
       lastT = t;
-      // Three overlapping phases, each moving one way only:
-      //  1. the letters shrink to the size of the bar's buttons (sh)
-      //  2. R B A travels down towards its slot in the bar (mv)
-      //  3. on the way it winds into the spiral (b), and is done before it
-      //     reaches the bar's row, so it never touches the buttons
+      // Overlapping phases, each moving one way only:
+      //  1. the letters shrink to the bar's size and close up to the left,
+      //     while the buttons slide together to the right (sh)
+      //  2. R B A travels down onto the small one in the bar (mv)
+      //  3. the spiral beside it fades in (b)
       const sh = smooth(clamp(t / 0.45, 0, 1));
       const mv = smooth(clamp((t - 0.1) / 0.8, 0, 1));
-      const b = smooth(clamp((t - 0.55) / 0.35, 0, 1));
+      const b = smooth(clamp((t - 0.7) / 0.3, 0, 1));
       const lerp = (x, y, p) => x + (y - x) * p;
-      // As large as the buttons' capitals
-      const small = m * 0.9;
       const br = bar.getBoundingClientRect();
-      // Target: the spiral's place in the corner square, travelling with the bar
-      const tx = slot.getBoundingClientRect().left;
-      const ty = br.top + (br.height - small * 0.78) / 2;
-
-      // The word as it would be laid out at this size and width
-      const k = lerp(lay.size, small, sh) / lay.size;
-      const w = lerp(lerp(lay.width, small * 2.3, sh), m, b);
-      // The word keeps its left edge on the screen and closes up towards the
-      // slot, so no letter ever leaves the page
-      const left = lerp(lay.left, tx, sh);
-      const top = lerp(lay.top, ty, mv);
-      const inner = lay.boxes.reduce((n, x) => n + x.w, 0) * k;
-      const gap = (w - inner - (lay.ml + lay.mr) * k) / Math.max(1, lay.boxes.length - 1);
-      let x = left + lay.ml * k;
+      const k = lerp(1, lay.k, sh);
       lay.boxes.forEach((box, i) => {
-        const dx = x - box.x, dy = top + box.y * k - (lay.top + box.y);
-        const cx = box.w * k / 2, cy = box.h * k / 2;
-        letters[i].style.transform =
-          `translate3d(${dx}px, ${dy}px, 0) scale(${k}) translate(${cx / k}px, ${cy / k}px) rotate(${b * 180}deg) scale(${1 - b * 0.6}) translate(${-cx / k}px, ${-cy / k}px)`;
-        x += box.w * k + gap;
+        const mark = lay.marks[i];
+        const dx = lerp(box.x, br.left + mark.x, sh) - box.x;
+        const dy = lerp(box.y, br.top + mark.y, mv) - box.y;
+        letters[i].style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(${k})`;
       });
-      mono.style.opacity = 1 - b;
+      const g = lerp(lay.grow, 1, sh);
+      buttons.forEach((el, i) => {
+        el.style.transform = `translate3d(${lay.shift[i] * (1 - sh)}px, 0, 0)` + (g !== 1 ? ` scale(${g})` : "");
+      });
+      // Landed: the small R B A takes over from the big one, in the same place
+      const done = t >= 1;
+      root.classList.toggle("landed", done);
+      mono.style.visibility = done ? "hidden" : "";
       mono.style.pointerEvents = t > 0.5 ? "none" : "";
 
       root.style.setProperty("--sb", b);
 
-      if (fadeTop) {
-        fadeTop.style.setProperty("--top-o", sh);
-        // A hidden band does not need to blur anything
-        fadeTop.classList.toggle("off", sh === 0);
-      }
+      // Out of reach until it shows
+      if (lang) lang.style.pointerEvents = b > 0.5 ? "" : "none";
+
+      // The band behind the bar shows once the page moves; a hidden band
+      // does not need to blur anything
+      if (fadeTop) fadeTop.classList.toggle("off", sh === 0);
     }
 
     measure();
@@ -235,10 +242,10 @@
       Promise.race([document.fonts.load("400 1em Jost", "RBA"), new Promise((r) => setTimeout(r, 3000))]).then(ready, ready);
     } else ready();
 
-    slot?.addEventListener("click", (e) => {
+    [slot, logo].forEach((el) => el?.addEventListener("click", (e) => {
       e.preventDefault();
       scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
-    });
+    }));
 
     // Magnet: the landing never rests half way. The first touch of the wheel
     // or trackpad inside the transition carries the page all the way,
@@ -483,11 +490,25 @@
       }
     }
 
-    // Slide the row so the current image sits in the middle of the page
+    // Slide the row so the current image takes the place of the first:
+    // each one is exactly as wide as the row's frame
     function centre() {
-      const f = figs[cur];
-      const x = stage.clientWidth / 2 - (f.offsetLeft + f.offsetWidth / 2);
+      const x = figs[0].offsetLeft - figs[cur].offsetLeft;
       track.style.transform = `translateX(${x}px)`;
+    }
+
+    // Wide screens: the pictures hang from the top left corner of their
+    // frame, and the counter follows the bottom of the one on show
+    const ui = document.querySelector(".viewer-ui");
+    const wide = matchMedia("(min-width: 1025px)");
+    function pin() {
+      if (!ui) return;
+      if (!wide.matches) { ui.style.transform = ""; return; }
+      const img = figs[cur].querySelector("img");
+      const ratio = img.getAttribute("width") / img.getAttribute("height");
+      const h = stage.clientHeight;
+      const shown = Math.min(h, stage.clientWidth / ratio);
+      ui.style.transform = `translateY(${Math.round(shown - h)}px)`;
     }
 
     function show(i) {
@@ -498,6 +519,7 @@
       const near = touch ? 1 : 2;
       for (let k = -near; k <= near; k++) load(cur + k);
       centre();
+      pin();
       count.textContent = pad(cur + 1) + " / " + pad(figs.length);
       if (note) note.textContent = figs[cur].dataset.group || "";
     }
@@ -547,8 +569,13 @@
       pointer.setAttribute("aria-hidden", "true");
       pointer.innerHTML = svg("M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5", "arrow h");
       body.appendChild(pointer);
-      // -1 back, 1 forward, 0 the band in the middle
-      const side = (e) => (e.clientX < innerWidth / 3 ? -1 : e.clientX > innerWidth * 2 / 3 ? 1 : 0);
+      // -1 back, 1 forward, 0 the band in the middle: thirds of the pictures'
+      // own width, the whole page or one half of it
+      const side = (e) => {
+        const r = stage.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        return x < 1 / 3 ? -1 : x > 2 / 3 ? 1 : 0;
+      };
       stage.addEventListener("mousemove", (e) => {
         const s = side(e);
         if (s) pointer.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) scaleX(${s})`;
@@ -573,6 +600,8 @@
     });
 
     onWidth(centre);
+    // Height matters too here: the frame is as tall as the screen allows
+    addEventListener("resize", pin);
     addEventListener("load", centre);
     show(0);
   }

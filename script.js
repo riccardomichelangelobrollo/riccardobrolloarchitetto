@@ -224,12 +224,12 @@
       scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
     });
 
-    // Magnet: the landing never rests half way. The first touch of the wheel,
-    // trackpad or finger inside the transition carries the page all the way,
+    // Magnet: the landing never rests half way. The first touch of the wheel
+    // or trackpad inside the transition carries the page all the way,
     // down to the bar at the top or back up to R B A, at once and in one move.
     // The rest of that same gesture is held back, so it cannot fight the move
     // or run on into the page.
-    let gliding = false, quietAt = 0, lastWheel = 0, lastDelta = 0;
+    let gliding = false, stopGlide = false, quietAt = 0, lastWheel = 0, lastDelta = 0;
     // Starts at once and settles softly. A gentle curve: a steeper one would
     // spend its last frames moving less than a pixel, which shows as a stutter
     const ease = (x) => 1 - (1 - x) * (1 - x);
@@ -240,8 +240,10 @@
       if (Math.abs(to - from) < 1) return;
       if (reduced) { scrollTo({ top: to, behavior: "instant" }); return; }
       gliding = true;
+      stopGlide = false;
       const start = performance.now(), ms = 700;
       (function step(now) {
+        if (stopGlide) { gliding = false; return; }
         const k = Math.min(1, (now - start) / ms);
         scrollTo({ top: Math.round(from + (to - from) * ease(k)), behavior: "instant" });
         // R B A follows in the same frame, never one behind the page
@@ -281,38 +283,31 @@
       glide(to);
     }, { passive: false });
 
-    // With a finger the page scrolls as the phone wants it to: the magnet
-    // works with the wheel and the trackpad only
-    if (!touch) {
-      // A computer with a touch screen: a swipe inside the transition becomes one move
-      let ty = null;
-      addEventListener("touchstart", (e) => { ty = e.touches[0].clientY; }, { passive: true });
-      addEventListener("touchmove", (e) => {
-        if (ty === null) return;
-        if (gliding) { e.preventDefault(); return; }
-        const dy = ty - e.touches[0].clientY;
-        if (Math.abs(dy) < 8) return;
-        const to = aim(dy);
-        if (to === null) { ty = null; return; }
-        e.preventDefault();
-        ty = null;
-        glide(to);
-      }, { passive: false });
-      addEventListener("touchend", () => { ty = null; }, { passive: true });
-
-      // Anything else (keys, the scrollbar) that leaves the page half way
-      let rest = 0, lastY = scrollY, dir = 1;
-      addEventListener("scroll", () => {
-        if (gliding) return;
-        if (scrollY !== lastY) dir = Math.sign(scrollY - lastY);
-        lastY = scrollY;
-        clearTimeout(rest);
-        rest = setTimeout(() => {
-          const y = scrollY, end = landed();
-          if (!gliding && y > 0 && y < end - 1) glide(dir < 0 ? 0 : end);
-        }, 120);
-      }, { passive: true });
-    }
+    // When the page comes to rest half way (a finger let go, the keys, the
+    // scrollbar), it finishes the transition in the direction it was going.
+    // It waits for the finger and for the phone's own momentum to end, and a
+    // new touch stops it at once.
+    let rest = 0, lastY = scrollY, dir = 1, finger = false;
+    addEventListener("scroll", () => {
+      if (gliding) return;
+      if (scrollY !== lastY) dir = Math.sign(scrollY - lastY);
+      lastY = scrollY;
+      clearTimeout(rest);
+      rest = setTimeout(() => {
+        const y = scrollY, end = landed();
+        if (!finger && !gliding && y > 0 && y < end - 1) glide(dir < 0 ? 0 : end);
+      }, touch ? 180 : 120);
+    }, { passive: true });
+    addEventListener("touchstart", () => { finger = true; stopGlide = true; }, { passive: true });
+    addEventListener("touchend", () => {
+      finger = false;
+      // The page may already be still: check once the finger is up
+      clearTimeout(rest);
+      rest = setTimeout(() => {
+        const y = scrollY, end = landed();
+        if (!finger && !gliding && y > 0 && y < end - 1) glide(dir < 0 ? 0 : end);
+      }, 180);
+    }, { passive: true });
   }
 
   /* Carousel: endless, drifts on its own, can be dragged.

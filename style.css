@@ -386,7 +386,8 @@ h3::first-letter,
 .carousel.dragging { cursor: grabbing; }
 .carousel.dragging a { pointer-events: none; }
 
-.carousel .card { flex: 0 0 calc(3 * var(--col) + 2 * var(--gap)); }
+/* Two columns wide, so more of them are in view at once */
+.carousel .card { flex: 0 0 calc(2 * var(--col) + var(--gap)); }
 
 /* Page head: title across, then the two axes */
 
@@ -836,19 +837,22 @@ h3::first-letter,
 
 .sheet iframe { width: 100%; height: 100%; border: 0; display: block; }
 
-/* Phones and tablets: the live blurs are the heaviest thing a phone can
-   be asked to draw while scrolling, and they fill its memory. There the
-   band under the bar is a plain white fade, the images beside the one in
-   the middle are pale instead of blurred, and an open image sits on white */
+/* Phones and tablets: live blurs are the heaviest thing a phone can be
+   asked to draw while scrolling. Only the band under the bar keeps one,
+   a single layer; an open image sits on white */
 @media (hover: none), (pointer: coarse) {
-  .fade > div:nth-child(1),
+  .fade > div:nth-child(1) { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
   .fade > div:nth-child(2) { display: none; }
-  .fade > div:nth-child(3) { background: linear-gradient(var(--dir), transparent, var(--bg) 70%); }
-
-  .viewer-track figure { filter: none; opacity: .3; transition: opacity .5s ease; }
-  .viewer-track figure.on { opacity: 1; }
 
   .lightbox { background: rgba(255, 255, 255, .97); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* Phones: one photograph at a time, as wide as the page */
+@media (max-width: 640px) {
+  .viewer-track figure { flex: 0 0 100%; filter: none; opacity: 0; transition: opacity .5s ease; }
+  .viewer-track figure.on { opacity: 1; }
+  .viewer-track img { width: 100%; object-fit: contain; }
+  .viewer-track figure[data-group] img { box-shadow: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -709,6 +709,24 @@ body:not(.is-small) .bar .lang { opacity: var(--sb, 1); }
 .lightbox .prev { left: 0; top: 50%; transform: translateY(-50%); }
 .lightbox .next-img { right: 0; top: 50%; transform: translateY(-50%); }
 
+/* The counter, in the middle of the band under the image, as the cross
+   sits in the band above it. A finger swipes; the page under stays put */
+.lightbox .lb-count {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--s4);
+  font-size: var(--fs-2);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.lightbox { touch-action: none; }
+
 /* Project page on a wide screen (12 columns): the pictures in the left
    half, title, facts and text on axis 7. On this side the margin shrinks
    to one gutter, the same as between two columns, so the pictures can

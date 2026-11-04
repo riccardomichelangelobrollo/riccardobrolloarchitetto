@@ -548,14 +548,17 @@
     box.innerHTML = '<img alt="">' +
       `<button class="close" type="button" aria-label="${it ? "Chiudi" : "Close"}">${svg("M4 4 L20 20 M20 4 L4 20", "cross")}</button>` +
       `<button class="prev" type="button" aria-label="${it ? "Precedente" : "Previous"}">${svg("M22 12 H3 M11.5 3.5 L3 12 L11.5 20.5", "arrow h")}</button>` +
-      `<button class="next-img" type="button" aria-label="${it ? "Successiva" : "Next"}">${svg("M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5", "arrow h")}</button>`;
+      `<button class="next-img" type="button" aria-label="${it ? "Successiva" : "Next"}">${svg("M2 12 H21 M12.5 3.5 L21 12 L12.5 20.5", "arrow h")}</button>` +
+      '<span class="lb-count" aria-live="polite"></span>';
     body.appendChild(box);
     const big = box.querySelector("img");
+    const lbCount = box.querySelector(".lb-count");
 
     function sync() {
       const img = figs[cur].querySelector("img");
       big.src = img.src || img.dataset.src;
       big.alt = img.alt;
+      lbCount.textContent = pad(cur + 1) + " / " + pad(figs.length);
     }
 
     function open() { sync(); box.classList.add("on"); }
@@ -591,7 +594,20 @@
     box.querySelector(".close").addEventListener("click", close);
     box.querySelector(".prev").addEventListener("click", (e) => { e.stopPropagation(); show(cur - 1); sync(); });
     box.querySelector(".next-img").addEventListener("click", (e) => { e.stopPropagation(); show(cur + 1); sync(); });
-    box.addEventListener("click", (e) => { if (e.target === box) close(); });
+    // A finger swipes from one image to the next here too; the tap that
+    // ends a swipe does not close the view
+    let lx = null, swiped = false;
+    box.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") lx = e.clientX; });
+    box.addEventListener("pointerup", (e) => {
+      if (lx === null) return;
+      const dx = e.clientX - lx;
+      lx = null;
+      if (Math.abs(dx) > 40) { swiped = true; show(cur + (dx < 0 ? 1 : -1)); sync(); }
+    });
+    box.addEventListener("click", (e) => {
+      if (swiped) { swiped = false; return; }
+      if (e.target === box) close();
+    });
 
     addEventListener("keydown", (e) => {
       if (e.key === "Escape") close();
@@ -711,8 +727,9 @@
         dragged = false;
         return;
       }
-      // The burst needs a mouse; a finger simply opens the page
-      if (!fine || reduced || busy || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      // With a mouse or a finger alike: the dot falls from where the card was
+      // touched, bounces and the page bursts out of it
+      if (reduced || busy || e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault();
       const x = e.clientX || innerWidth / 2;
       const y = e.clientY || innerHeight / 2;
